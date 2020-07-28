@@ -45,6 +45,9 @@ def turn_left():
 def spin():
     setVel(0.6, -0.6)
 
+def parar():
+    setVel(0,0)
+
 def setVel(vl, vr):
     wheel_left.setVelocity(vl*max_velocity)
     wheel_right.setVelocity(vr*max_velocity)
@@ -53,29 +56,32 @@ def nearObject(position):
     return math.sqrt((position[0] ** 2) + (position[2] ** 2)) < 0.10
 
 def getVisibleVictims():
-    #get all objects the camera can see
+    #junta todos los objetos que puede ver
     objects = camera.getRecognitionObjects()
     victims = []
-
+    #print("Objetos:",len(objects))
     for item in objects:
         if item.get_colors() == [1,1,1]:
             victim_pos = item.get_position()
             victims.append(victim_pos)
-
+            #print("Pos victima:",victim_pos)
+    #print("Victimas:",len(victims))
     return victims
 
 while robot.step(timeStep) != -1:
     setVel(1,1)
     for i in range(2):
-        #for sensors on the left, either
+       #si algun sensor de la izquierda da positivo
         if leftSensors[i].getValue() > 80:
             turn_right()
-        #for sensors on the right, either
+        #si alguno de la derecha da positivo
         elif rightSensors[i].getValue() > 80:
             turn_left()
     
-    #for both front sensors
+     #si los dos sensores de frente dan positivo
     if frontSensors[0].getValue() > 80 and frontSensors[1].getValue() > 80:
         spin()
 
-    print(getVisibleVictims())
+    parar()
+    
+    getVisibleVictims()

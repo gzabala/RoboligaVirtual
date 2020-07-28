@@ -13,5 +13,5 @@ wheel_left.setPosition(float("inf"))
 wheel_right.setPosition(float("inf"))
 
 while robot.step(timeStep) != -1:
-    wheel_left.setVelocity(6.28)
+    wheel_left.setVelocity(1.28)
     wheel_right.setVelocity(6.28)

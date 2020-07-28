@@ -39,6 +39,9 @@ def turn_left():
 def spin():
     setVel(0.6, -0.6)
 
+def parar():
+    setVel(0,0)
+
 def setVel(vl, vr):
     wheel_left.setVelocity(vl*max_velocity)
     wheel_right.setVelocity(vr*max_velocity)
@@ -46,15 +49,15 @@ def setVel(vl, vr):
 
 while robot.step(timeStep) != -1:
     setVel(1,1)
-    for i in range(2): #for(int i=0; i>=1; i++)
-        #for sensors on the left, either
+    for i in range(2): 
+        #si algun sensor de la izquierda da positivo
         if leftSensors[i].getValue() > 80:
             turn_right()
-        #for sensors on the right, either
+        #si alguno de la derecha da positivo
         elif rightSensors[i].getValue() > 80:
             turn_left()
     
-    #for both front sensors
+    #si los dos sensores de frente dan positivo
     if frontSensors[0].getValue() > 80 and frontSensors[1].getValue() > 80:
         spin()
 
