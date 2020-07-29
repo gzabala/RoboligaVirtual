@@ -61,4 +61,4 @@ while robot.step(timeStep) != -1:
     if frontSensors[0].getValue() > 80 and frontSensors[1].getValue() > 80:
         spin()
 
-    #las velocidad i y d que tenga en este punto son las que realmente se van a activar
+    #las velocidades i y d que tenga en este punto son las que realmente se van a activar

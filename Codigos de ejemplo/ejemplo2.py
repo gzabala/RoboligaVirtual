@@ -52,8 +52,6 @@ def setVel(vl, vr):
     wheel_left.setVelocity(vl*max_velocity)
     wheel_right.setVelocity(vr*max_velocity)
 
-def nearObject(position):
-    return math.sqrt((position[0] ** 2) + (position[2] ** 2)) < 0.10
 
 def getVisibleVictims():
     #junta todos los objetos que puede ver
@@ -62,9 +60,9 @@ def getVisibleVictims():
     #print("Objetos:",len(objects))
     for item in objects:
         if item.get_colors() == [1,1,1]:
-            victim_pos = item.get_position()
+            victim_pos = item.get_position() #posicion de vic con respecto a la camara
             victims.append(victim_pos)
-            #print("Pos victima:",victim_pos)
+            print("Pos victima:",victim_pos)
     #print("Victimas:",len(victims))
     return victims
 

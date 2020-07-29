@@ -61,7 +61,8 @@ def sendMessage():
     position = gps.getValues()
 
     if not messageSent:
-        #robot type, position x cm, position z cm, victim type
+        #robot type, posicion en cm, posicion en cm, tipo de victima (esto hay que perfeccionarlo luego)
+        #struct.pack codifica en binario un mensaje
         message = struct.pack('i i i c', 0, int(position[0] * 100), int(position[2] * 100), b'H')
         emitter.send(message)
         messageSent = True
@@ -71,32 +72,34 @@ def nearObject(position):
     return math.sqrt((position[0] ** 2) + (position[2] ** 2)) < 0.10
 
 def getVisibleVictims():
-    #get all objects the camera can see
+    #captura todos los objetos que la camara puede ver
     objects = camera.getRecognitionObjects()
 
     victims = []
 
     for item in objects:
         if item.get_colors() == [1,1,1]:
-            victim_pos = item.get_position()
+            victim_pos = item.get_position() 
             victims.append(victim_pos)
 
     return victims
 
 def stopAtVictim():
-    global messageSent
-    #get all the victims the camera can see
+    global messageSent #envio de mensajes. Con global le digo que estoy usando la variable declarada afuera y no una local
+
+    #tomo posicion de posibles victimas (porque son blancas)    
     victims = getVisibleVictims()
 
     foundVictim = False
 
-    #if we are near a victim, stop and send a message to the supervisor
+    #si estamos cerca de una victima, paramos y enviamos mensaje al supervisor
     for victim in victims:
         if nearObject(victim):
             stop()
             sendMessage()
             foundVictim = True
 
+    #si mande un mensaje, no mando de nuevo hasta que no pierda de vista esta
     if not foundVictim:
         messageSent = False
 
@@ -129,8 +132,12 @@ def setVel(vl, vr):
     wheel_left.setVelocity(vl*max_velocity)
     wheel_right.setVelocity(vr*max_velocity)
 
+def enTarea():
+    #truquito para quedarme en espera
+    return (robot.getTime() - startTime) < duration
+
 while robot.step(timeStep) != -1:
-    if (robot.getTime() - startTime) < duration:
+    if enTarea():
         pass
     else:
         startTime = 0
@@ -139,18 +146,18 @@ while robot.step(timeStep) != -1:
         setVel(1,1)
 
         for i in range(2):
-            #for sensors on the left, either
+            #si algun sensor de la izquierda da positivo
             if leftSensors[i].getValue() > 80:
                 turn_right()
-            #for sensors on the right, either
+             #si alguno de la derecha da positivo
             elif rightSensors[i].getValue() > 80:
                 turn_left()
         
-        #for both front sensors
+       #si los dos sensores de frente dan positivo
         if frontSensors[0].getValue() > 80 and frontSensors[1].getValue() > 80:
             spin()
 
         stopAtVictim()
 
-        avoidTiles()
+        #avoidTiles()
 
