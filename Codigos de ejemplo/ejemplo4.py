@@ -63,11 +63,12 @@ wheel_right.setPosition(float("inf"))
 
 program_start = robot.getTime()
 
-def sendMessage(robot_type, v1, v2, v3):
-    message = struct.pack('i i i c', robot_type, v1, v2, v3)
+def sendMessage(robot_type, v1, v2, carac):
+    message = struct.pack('i i i c', robot_type, v1, v2, carac)
     emitter.send(message)
 
 def sendVictimMessage():
+    #deberiamos pasar como parametro que victima es y quien soy yo
     global messageSent
     position = gps.getValues()
 
