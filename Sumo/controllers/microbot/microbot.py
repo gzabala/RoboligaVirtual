@@ -1,7 +1,6 @@
 from RobotRL import RobotRL
 
 ro=RobotRL("Paulina")
-estados=[]
 
 def recto():
     ro.setVel(1,1)
@@ -20,16 +19,6 @@ def buscar():
         irIzquierda()
         return
 
-def ejecutarEstado(est):
-    est[0]()
-    ro.esperar(est[1])
-
-def sinTareas():
-    return (len(estados) == 0)
-
-def agregarEstado(estado, tiempo):
-    estados.append((estado, tiempo))
-
 def irDerecha():
     ro.setVel(-0.4, 0.4)
 
@@ -47,21 +36,12 @@ def parar():
 
 def noCaer():
     if ro.getColorPiso()>90:
-        agregarEstado(retroceder,2)
-        agregarEstado(girar, 1)
+        retroceder()
+        ro.esperar(2)
+        girar()
+        ro.esperar(1)
 
-def estadoDefecto():
+while ro.step():
     ro.setVel(-0.2, 0.2)
     noCaer()
     buscar()
-    
-while ro.funcionando():
-    #print("SI:"+str(ro.getDI()) + " SD: "+str(ro.getDD()))
-    if ro.enEspera():
-       pass
-    else:
-       if(sinTareas()):
-           estadoActual=(estadoDefecto,0)
-       else:
-           estadoActual=estados.pop(0)
-       ejecutarEstado(estadoActual)
