@@ -1,6 +1,13 @@
 #VRML_SIM R2020a utf8
 WorldInfo {
   basicTimeStep 16
+  contactProperties [
+    ContactProperties {
+      coulombFriction [
+        3
+      ]
+    }
+  ]
 }
 Viewpoint {
   orientation 0.0366442533592862 0.9468871326190489 0.31947137082407884 3.357965683044441
@@ -59,58 +66,16 @@ DEF Rojo MicrobotRL {
       ]
       boundingObject USE placa
       physics Physics {
+        density -1
+        mass 0.2
       }
-    }
-    DistanceSensor {
-      translation -0.02 0.007 -0.040016
-      rotation 0 1 0 1.57
-      children [
-        DEF sensor Shape {
-          appearance PBRAppearance {
-            baseColor 1 0 0
-          }
-          geometry Box {
-            size 0.01 0.01 0.01
-          }
-        }
-      ]
-      name "sensorDistanciaI"
-      boundingObject USE sensor
-      physics Physics {
-      }
-      lookupTable [
-        0 0 0
-        1 100 0
-      ]
-    }
-    DistanceSensor {
-      translation 0.02 0.007 -0.039984
-      rotation 0 1 0 1.57
-      children [
-        DEF sensor Shape {
-          appearance PBRAppearance {
-            baseColor 1 0 0
-          }
-          geometry Box {
-            size 0.01 0.01 0.01
-          }
-        }
-      ]
-      name "sensorDistanciaD"
-      boundingObject USE sensor
-      physics Physics {
-      }
-      lookupTable [
-        0 0 0
-        1 100 0
-      ]
     }
   ]
 }
 DEF Verde MicrobotRL {
   translation 0.2 0.0409483 0
   rotation 0 1 0 -5.307179586466759e-06
-  name "J1(1)"
+  name "J2"
   extensionSlot [
     DEF equipo Solid {
       translation 0 0.024 0
@@ -129,51 +94,9 @@ DEF Verde MicrobotRL {
       ]
       boundingObject USE placa
       physics Physics {
+        density -1
+        mass 0.2
       }
-    }
-    DistanceSensor {
-      translation -0.02 0.007 -0.040016
-      rotation 0 1 0 1.57
-      children [
-        DEF sensor Shape {
-          appearance PBRAppearance {
-            baseColor 1 0 0
-          }
-          geometry Box {
-            size 0.01 0.01 0.01
-          }
-        }
-      ]
-      name "sensorDistanciaI"
-      boundingObject USE sensor
-      physics Physics {
-      }
-      lookupTable [
-        0 0 0
-        1 100 0
-      ]
-    }
-    DistanceSensor {
-      translation 0.02 0.007 -0.039984
-      rotation 0 1 0 1.57
-      children [
-        DEF sensor Shape {
-          appearance PBRAppearance {
-            baseColor 1 0 0
-          }
-          geometry Box {
-            size 0.01 0.01 0.01
-          }
-        }
-      ]
-      name "sensorDistanciaD"
-      boundingObject USE sensor
-      physics Physics {
-      }
-      lookupTable [
-        0 0 0
-        1 100 0
-      ]
     }
   ]
 }

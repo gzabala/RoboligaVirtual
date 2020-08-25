@@ -26,9 +26,63 @@ PROTO MicrobotRL [
     supervisor IS supervisor
     synchronization IS synchronization
     children [
-      Group {
+	  Group {
         children IS extensionSlot
       }
+
+    DistanceSensor {
+      translation -0.02 0.007 -0.040016
+      rotation 0 1 0 1.57
+      children [
+        DEF sensor Shape {
+          appearance PBRAppearance {
+            baseColor 1 0 0
+          }
+          geometry Box {
+            size 0.01 0.01 0.01
+          }
+        }
+      ]
+      name "sensorDistanciaI"
+      boundingObject USE sensor
+      lookupTable [
+        0 0 0
+        1 100 0
+      ]
+		physics Physics {
+			density -1
+			mass 0.05
+	  
+		}
+
+    }
+	DistanceSensor {
+	  translation 0.02 0.007 -0.039984
+	  rotation 0 1 0 1.57
+	  children [
+		DEF sensor Shape {
+		  appearance PBRAppearance {
+			baseColor 1 0 0
+		  }
+		  geometry Box {
+			size 0.01 0.01 0.01
+		  }
+		}
+	  ]
+	  name "sensorDistanciaD"
+	  boundingObject USE sensor
+	  lookupTable [
+		0 0 0
+		1 100 0
+	  ]
+	  		physics Physics {
+			density -1
+			mass 0.05
+	  
+		}
+
+
+	}
       TouchSensor {
         name "boton"
         translation 0.025 0.005 -0.023
@@ -309,6 +363,8 @@ PROTO MicrobotRL [
     name IS name
     model "BOT120 PICAXE-20X2 Microbot"
     physics Physics {
+		density -1
+		mass 2
     }
     boundingObject Group {
       children [
