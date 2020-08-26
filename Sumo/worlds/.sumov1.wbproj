@@ -9,5 +9,5 @@ viewpointLocked: 0
 orthographicViewHeight: 1
 textFiles: -1
 globalOptionalRendering: DistanceSensorRays
-renderingDevicePerspectives: J1:colorPiso;1;88;0;0
 renderingDevicePerspectives: J2:colorPiso;1;32;0;0
+renderingDevicePerspectives: J1:colorPiso;1;88;0;0

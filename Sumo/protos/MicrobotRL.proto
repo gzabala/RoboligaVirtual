@@ -362,10 +362,6 @@ PROTO MicrobotRL [
     ]
     name IS name
     model "BOT120 PICAXE-20X2 Microbot"
-    physics Physics {
-		density -1
-		mass 2
-    }
     boundingObject Group {
       children [
         Transform {

@@ -1,13 +1,6 @@
 #VRML_SIM R2020a utf8
 WorldInfo {
   basicTimeStep 16
-  contactProperties [
-    ContactProperties {
-      coulombFriction [
-        3
-      ]
-    }
-  ]
 }
 Viewpoint {
   orientation 0.0366442533592862 0.9468871326190489 0.31947137082407884 3.357965683044441
@@ -20,7 +13,7 @@ TexturedBackgroundLight {
 Floor {
 }
 DEF base Solid {
-  translation 0 0.00485781 0
+  translation 0 0.0248578 0
   children [
     DEF dohyo Shape {
       appearance PBRAppearance {
@@ -42,11 +35,9 @@ DEF base Solid {
   name "base"
   contactMaterial "piso"
   boundingObject USE dohyo
-  physics Physics {
-  }
 }
 DEF Rojo MicrobotRL {
-  translation -0.2 0.0409483 0
+  translation -0.2 0.0709483 0
   rotation 0 1 0 3.14
   extensionSlot [
     DEF equipo Solid {
@@ -73,7 +64,7 @@ DEF Rojo MicrobotRL {
   ]
 }
 DEF Verde MicrobotRL {
-  translation 0.2 0.0409483 0
+  translation 0.2 0.0809483 0
   rotation 0 1 0 -5.307179586466759e-06
   name "J2"
   extensionSlot [
