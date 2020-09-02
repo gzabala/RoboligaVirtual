@@ -9,8 +9,6 @@ class RobotRL:
     def __init__(self, name):
         #propiedades de objeto
         self.nombre=name
-        self.__tiempoInicio = 0
-        self.__duracion = 0
         self.__robot = Robot()
 
         self.__ruedaIzquierda = self.__robot.getMotor("motorIzquierdo")
@@ -32,10 +30,16 @@ class RobotRL:
         self.__vd=0
 
     #Velocidad de las ruedas
-    def setVel(self, vl, vr):
-        self.__vi=vl*self.__max_velocity
-        self.__vd=vr*self.__max_velocity
+    def setVel(self, vi, vd):
+        self.setVI(vi)
+        self.setVD(vd)
+
+    def setVI(self, vi):
+        self.__vi=vi*self.__max_velocity
         self.__ruedaIzquierda.setVelocity(self.__vi)
+
+    def setVD(self, vd):
+        self.__vd=vd*self.__max_velocity
         self.__ruedaDerecha.setVelocity(self.__vd)
 
     def getVI(self):
@@ -45,12 +49,13 @@ class RobotRL:
         return self.__vd
 
     #Espera
-    def enEspera(self):
-        return (self.__robot.getTime() - self.__tiempoInicio) < self.__duracion
+    def esperar(self, duracion):
+        inicio = self.tiempoActual()
+        while (self.tiempoActual() - inicio) < duracion:
+            self.step()
 
-    def esperar(self, tiempo):
-        self.__tiempoInicio=self.__robot.getTime()
-        self.__duracion=tiempo
+    def tiempoActual(self):
+        return self.__robot.getTime()
 
     #funciones útiles
     def __mapeo(self, val, min, max):
@@ -66,6 +71,5 @@ class RobotRL:
     def getDD(self):
         return self.__senDistD.getValue()
 
-    def funcionando(self):
+    def step(self):
         return (self.__robot.step(self.__timeStep) != -1)
-        
