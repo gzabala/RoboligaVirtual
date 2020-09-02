@@ -3,42 +3,47 @@ WorldInfo {
   basicTimeStep 16
 }
 Viewpoint {
-  orientation 0.0366442533592862 0.9468871326190489 0.31947137082407884 3.357965683044441
-  position -0.6320571584146017 1.6241173474239035 -2.0755954423472955
+  orientation -0.9981283433961543 0.05582909596163367 0.024958408470001386 0.8421932161722968
+  position 0.15749437895053517 2.2767100515955714 2.17225569673226
 }
 TexturedBackground {
 }
 TexturedBackgroundLight {
 }
 Floor {
+  contactMaterial "tierra"
+  appearance Rubber {
+  }
 }
 DEF base Solid {
-  translation 0 0.0248578 0
   children [
-    DEF dohyo Shape {
+    Shape {
       appearance PBRAppearance {
         baseColorMap ImageTexture {
           url [
             "textures/dohyo.PNG"
           ]
         }
-        roughness 1
+        roughness 0.5
         metalness 0
       }
-      geometry Cylinder {
-        height 0.03
+      geometry DEF forma Cylinder {
+        height 0.0001
         radius 0.75
+        side FALSE
         subdivision 60
       }
     }
   ]
   name "base"
-  contactMaterial "piso"
-  boundingObject USE dohyo
+  locked TRUE
+  translationStep 0
+  rotationStep 0
 }
 DEF Rojo MicrobotRL {
-  translation -0.2 0.0709483 0
-  rotation 0 1 0 3.14
+  translation -0.2 0.0217 0
+  name "Rojo"
+  controller "robot0Controller"
   extensionSlot [
     DEF equipo Solid {
       translation 0 0.024 0
@@ -57,16 +62,15 @@ DEF Rojo MicrobotRL {
       ]
       boundingObject USE placa
       physics Physics {
-        density -1
-        mass 0.2
       }
     }
   ]
 }
 DEF Verde MicrobotRL {
-  translation 0.2 0.0809483 0
-  rotation 0 1 0 -5.307179586466759e-06
-  name "J2"
+  translation 0.2 0.0217 0
+  rotation 0 1 0 3.14592
+  name "Verde"
+  controller "robot1Controller"
   extensionSlot [
     DEF equipo Solid {
       translation 0 0.024 0
@@ -85,9 +89,17 @@ DEF Verde MicrobotRL {
       ]
       boundingObject USE placa
       physics Physics {
-        density -1
-        mass 0.2
       }
     }
   ]
+}
+DEF MAINSUPERVISOR Robot {
+  children [
+    Receiver {
+      channel 1
+    }
+  ]
+  controller "MainSupervisor"
+  supervisor TRUE
+  window "MainSupervisorWindow"
 }

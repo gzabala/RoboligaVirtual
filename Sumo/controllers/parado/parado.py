@@ -57,11 +57,4 @@ def estadoDefecto():
 
 while ro.funcionando():
     
-    if ro.enEspera():
-       pass
-    else:
-       if(sinTareas()):
-           estadoActual=(estadoDefecto,0)
-       else:
-           estadoActual=estados.pop(0)
-       ejecutarEstado(estadoActual)
+	parar()

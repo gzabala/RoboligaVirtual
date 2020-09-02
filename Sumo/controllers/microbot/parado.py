@@ -1,7 +1,7 @@
-#RobotName: Paulina 
+#RobotName: Parado 
 from RobotRL import RobotRL
 
-ro=RobotRL("Paulina")
+ro=RobotRL("Parado")
 estados=[]
 
 def recto():
@@ -57,11 +57,4 @@ def estadoDefecto():
 
 while ro.funcionando():
     
-    if ro.enEspera():
-       pass
-    else:
-       if(sinTareas()):
-           estadoActual=(estadoDefecto,0)
-       else:
-           estadoActual=estados.pop(0)
-       ejecutarEstado(estadoActual)
+	parar()

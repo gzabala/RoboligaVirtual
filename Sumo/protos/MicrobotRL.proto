@@ -9,7 +9,7 @@ PROTO MicrobotRL [
   field SFVec3f    translation      0 0.0409483 0.685 # Is `Transform.translation`.
   field SFRotation rotation         0 1 0 0   # Is `Transform.rotation`.
   field SFString   name            "J1"   # Is `Solid.name`.
-  field SFString   controller      "microbot"     # Is `Robot.controller`.
+  field SFString   controller      ""     # Is `Robot.controller`.
   field SFString   controllerArgs  ""         # Is `Robot.controllerArgs`.
   field SFString   customData      ""         # Is `Robot.customData`.
   field SFBool     supervisor      FALSE      # Is `Robot.supervisor`.
@@ -49,11 +49,13 @@ PROTO MicrobotRL [
         0 0 0
         1 100 0
       ]
-	  physics Physics {
-			density -1
-			mass 0.05
 	  
-		}
+	  physics Physics {
+		density -1
+		mass 0.05
+	  }
+
+	  
     }
 	DistanceSensor {
 	  translation 0.02 0.007 -0.039984
@@ -75,10 +77,11 @@ PROTO MicrobotRL [
 		1 100 0
 	  ]
 	  physics Physics {
-			density -1
-			mass 0.05
+		density -1
+		mass 0.05
+	  }
+
 	  
-		}
 	}
       TouchSensor {
         name "boton"
@@ -227,15 +230,15 @@ PROTO MicrobotRL [
         }
         device [
           RotationalMotor {
-            name "motorDerecho"
+            name "motorIzquierdo"
 			maxVelocity 30
           }
           PositionSensor {
-            name "right wheel sensor"
+            name "left wheel sensor"
           }
         ]
         endPoint Solid {
-          name "right wheel"
+          name "left wheel"
           translation 0.038 -0.009 0.012
           rotation -1 0 0 0
           physics DEF WHEEL_PHYSICS Physics {
@@ -291,15 +294,15 @@ PROTO MicrobotRL [
         }
         device [
           RotationalMotor {
-            name "motorIzquierdo"
+            name "motorDerecho"
 			maxVelocity 30
           }
           PositionSensor {
-            name "left wheel sensor"
+            name "right wheel sensor"
           }
         ]
         endPoint Solid {
-          name "left wheel"
+          name "right wheel"
           rotation -1 0 0 0
           translation -0.038 -0.009 0.012
           physics USE WHEEL_PHYSICS
