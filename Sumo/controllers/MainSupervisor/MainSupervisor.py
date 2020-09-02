@@ -287,7 +287,7 @@ resetControllerFile(1)
 timeElapsed = 0
 lastTime = -1
 numsReloc=0
-timeReloc=5
+timeReloc=15
 timeOut=20
 
 # Send message to robot window to perform setup
