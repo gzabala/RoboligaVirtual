@@ -152,8 +152,9 @@ function startup (){
 function update (data){
 	//Update the ui each frame of the simulation
 	//Sets the scores and the timer
-
 	document.getElementById("timer").innerHTML = calculateTimeRemaining(data[0]);
+	document.getElementById("r0ts").innerHTML = calculateTime(data[1]);
+	document.getElementById("r1ts").innerHTML = calculateTime(data[2]);
 }
 
 function calculateTimeRemaining(done){
@@ -162,6 +163,33 @@ function calculateTimeRemaining(done){
 	done = Math.floor(done);
 	//Calculate number of seconds remaining
 	var remaining = maxTime - done;
+	//Calculate seconds part of the time
+	var seconds = Math.floor(remaining % 60);
+	//Calculate the minutes part of the time
+	var mins = Math.floor((remaining - seconds) / 60);
+	//Convert parts to strings
+	mins = String(mins)
+	seconds = String(seconds)
+	
+	//Add leading 0s if necessary
+	for (var i = 0; i < 2 - seconds.length; i++){
+		seconds = "0" + seconds;
+	}
+	
+	for (var i = 0; i < 2 - mins.length ; i++){
+		mins = "0" + mins;
+	}
+	
+	//Return the time string
+	return mins + ":" + seconds;
+}
+
+function calculateTime(done){
+	//Create the string for the time remaining (mm:ss) given the amount of time elapsed
+	//Convert to an integer
+	done = Math.floor(done);
+	//Calculate number of seconds remaining
+	var remaining = done;
 	//Calculate seconds part of the time
 	var seconds = Math.floor(remaining % 60);
 	//Calculate the minutes part of the time

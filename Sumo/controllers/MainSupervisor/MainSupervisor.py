@@ -301,7 +301,8 @@ robot1Obj.position=[0.2, 0.0217, 0]
 
 # Until the match ends (also while paused)
 while simulationRunning:
-    
+    r0ts=robot0Obj.timeStopped()
+    r1ts=robot1Obj.timeStopped()
     # The first frame of the game running only
     if first and currentlyRunning:
         # Restart both controllers
@@ -324,8 +325,7 @@ while simulationRunning:
         #Si tienen una diferencia de 3 o menos y uno de los dos superó los 15, mandamos los dos a reloquearse
         #sino
         #si uno supero los 20, perdió
-        r0ts=robot0Obj.timeStopped()
-        r1ts=robot1Obj.timeStopped()
+
         print(str(r0ts)+" - "+str(r1ts))
         if max(r0ts, r1ts)>timeReloc and abs(r0ts-r1ts)<=3:
             relocate(numsReloc)
@@ -415,7 +415,7 @@ while simulationRunning:
 
     # Send the update information to the robot window
     supervisor.wwiSendText(
-        "update," + str(timeElapsed))
+        "update," + str(timeElapsed)+","+str(r0ts)+","+str(r1ts))
 
     # If the time is up
     if timeElapsed >= maxTime:
