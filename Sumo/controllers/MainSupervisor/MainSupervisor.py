@@ -186,8 +186,9 @@ def createController(number: int, fileData: list) -> list:
         # Return data with a name
         return name, number
 
+    print("EL ROBOT NO TIENE NOMBRE")
     # Return data without a name
-    return None, number
+    return "SinNombre", number
 
 
 def assignController(num: int, name: str) -> None:

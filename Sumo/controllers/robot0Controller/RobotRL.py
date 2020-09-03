@@ -40,11 +40,11 @@ class RobotRL:
         self.setVD(vd)
 
     def setVI(self, vi):
-        self.__vi=vi*self.__max_velocity
+        self.__vi=vi*self.__max_velocity/100
         self.__ruedaIzquierda.setVelocity(self.__vi)
 
     def setVD(self, vd):
-        self.__vd=vd*self.__max_velocity
+        self.__vd=vd*self.__max_velocity/100
         self.__ruedaDerecha.setVelocity(self.__vd)
 
     def getVI(self):
