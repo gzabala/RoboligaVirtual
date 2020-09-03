@@ -22,6 +22,12 @@ class RobotRL:
         self.__senDistD=self.__robot.getDistanceSensor("sensorDistanciaD")
         self.__senDistD.enable(self.__timeStep)
 
+        self.__bumperI=self.__robot.getTouchSensor("bumperIzquierdo")
+        self.__bumperI.enable(self.__timeStep)
+
+        self.__bumperD=self.__robot.getTouchSensor("bumperDerecho")
+        self.__bumperD.enable(self.__timeStep)
+
         self.__ruedaIzquierda.setPosition(float("inf"))
         self.__ruedaDerecha.setPosition(float("inf"))
 
@@ -69,6 +75,12 @@ class RobotRL:
 
     def getDD(self):
         return self.__senDistD.getValue()
+
+    def getBI(self):
+        return self.__bumperI.getValue()
+
+    def getBD(self):
+        return self.__bumperD.getValue()
 
     def step(self):
         return (self.__robot.step(self.__timeStep) != -1)

@@ -43,4 +43,5 @@ def noCaer():
         ro.esperar(1)
 
 while ro.step():
+    print(str(ro.getBI())+"-"+str(ro.getBD()))
     parar()
