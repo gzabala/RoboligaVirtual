@@ -6,9 +6,8 @@ class RobotRL:
     __timeStep = 32
     __max_velocity = 30
 
-    def __init__(self, name):
+    def __init__(self):
         #propiedades de objeto
-        self.nombre=name
         self.__robot = Robot()
 
         self.__ruedaIzquierda = self.__robot.getMotor("motorIzquierdo")

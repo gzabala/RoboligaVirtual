@@ -1,7 +1,7 @@
 #RobotName: Parado
 from RobotRL import RobotRL
 
-ro=RobotRL("Parado")
+ro=RobotRL()
 
 def recto():
     ro.setVel(1,1)
