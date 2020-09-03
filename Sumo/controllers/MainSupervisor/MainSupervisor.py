@@ -125,8 +125,13 @@ class Robot:
 
         return self._timeStopped
 
-    def outOfDohyo(self):
+    def outOfDohyo(self) ->bool:
         return(math.sqrt(self.position[0]*self.position[0]+self.position[2]*self.position[2])>lossDistance)
+
+    def crashed(self):
+        vel = self.wb_node.getVelocity()
+        posy=self.position[1]
+        return(vel[1]>0.8 or posy>0.12)
 
 def getPath(number: int) -> str:
     '''Get the path to the correct controller'''
@@ -339,11 +344,12 @@ while simulationRunning:
         first = False
     
     if robot0Obj.inSimulation:
+        
         if(robot0Obj.outOfDohyo() and robot1Obj.outOfDohyo()):
             finished=True
             robot0Obj.inSimulation=False
             robot1Obj.inSimulation=False
-            write_log(robot0Obj._name,robot1Obj._name, "empate", "Salida dohyo", str(timeElapsed) )
+            write_log(robot0Obj._name,robot1Obj._name, "Empate", "Salida dohyo ambos", str(timeElapsed) )
             supervisor.wwiSendText("draw")
             
         if(robot0Obj.outOfDohyo()):
@@ -468,8 +474,13 @@ while simulationRunning:
     # If the time is up
     if timeElapsed >= maxTime:
         finished = True
-        write_log(robot0Obj._name,robot1Obj._name, "empate", "Fin tiempo", str(timeElapsed))
+        write_log(robot0Obj._name,robot1Obj._name, "Empate", "Fin tiempo", str(timeElapsed))
         supervisor.wwiSendText("draw")
+
+    if(robot0Obj.crashed() or robot1Obj.crashed()):
+        finished = True
+        write_log(robot0Obj._name,robot1Obj._name, "Cancelado", "Crash", str(timeElapsed))
+        supervisor.wwiSendText("crash")
 
     # If the match is running
     if currentlyRunning and not finished:

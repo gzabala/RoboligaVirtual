@@ -55,6 +55,9 @@ function receive (message){
 				//The game is over
 				draw();
 				break;
+			case "crash":
+				crash();
+				break;
 			case "activityLoaded0":
 				activityLoadedColor(0,parts[1],parts[2],parts[3])
 				break;
@@ -343,6 +346,11 @@ function lostJ2() {
 
 function draw() {
 	document.getElementById("winning-team").innerHTML = "¡Empate!"
+	endGame();
+}
+
+function crash() {
+	document.getElementById("winning-team").innerHTML = "Cancelado"
 	endGame();
 }
 

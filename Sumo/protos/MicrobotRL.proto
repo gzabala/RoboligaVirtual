@@ -15,6 +15,7 @@ PROTO MicrobotRL [
   field SFBool     supervisor      FALSE      # Is `Robot.supervisor`.
   field SFBool     synchronization TRUE       # Is `Robot.synchronization`.
   field MFNode     extensionSlot   []         # Extends the robot with new nodes in the extension slot.
+  field SFFloat    max_velocity    30         
 ]
 {
   Robot {
@@ -25,6 +26,7 @@ PROTO MicrobotRL [
     customData IS customData
     supervisor IS supervisor
     synchronization IS synchronization
+	
     children [
 	  Group {
         children IS extensionSlot
@@ -231,7 +233,7 @@ PROTO MicrobotRL [
         device [
           RotationalMotor {
             name "motorIzquierdo"
-			maxVelocity 30
+			maxVelocity IS max_velocity
           }
           PositionSensor {
             name "left wheel sensor"
@@ -295,7 +297,7 @@ PROTO MicrobotRL [
         device [
           RotationalMotor {
             name "motorDerecho"
-			maxVelocity 30
+			maxVelocity IS max_velocity
           }
           PositionSensor {
             name "right wheel sensor"
