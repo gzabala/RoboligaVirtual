@@ -237,7 +237,7 @@ def distancia(pos):
 def write_log(r0, r1, winner, reason, time):
     '''Write log file'''
     # Get log text
-    log_str = r0.rstrip("\r\n")+","+str(r1).rstrip("\r\n")+","+str(winner.rstrip("\r\n"))+","+reason+","+time+"\n"
+    log_str = str(r0).rstrip("\r\n")+","+str(r1).rstrip("\r\n")+","+str(winner).rstrip("\r\n")+","+reason+","+time+"\n"
     # Get relative path to logs dir
     filePath = os.path.dirname(os.path.abspath(__file__))
     filePath = filePath.replace('\\', '/')
