@@ -9,7 +9,7 @@ def recto():
 def buscar():
     di=ro.getDI()
     dd=ro.getDD()
-    print("DI: "+str(di)+" DD: "+str(dd))
+    
     if(di<100 and dd<100):
         recto()
         return

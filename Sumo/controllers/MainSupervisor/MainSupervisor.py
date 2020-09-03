@@ -7,6 +7,7 @@ import os
 import random
 import struct
 import math
+import datetime
 
 # Create the instance of the supervisor class
 supervisor = Supervisor()
@@ -68,7 +69,7 @@ class Robot:
 
         self.inSimulation = True
 
-        #self.previousPosition = [None,None,None]
+        self._name=""
 
     @property
     def position(self) -> list:
@@ -229,9 +230,33 @@ def relocate(num):
     robot0Obj.history.enqueue("Relocalizacion nro: "+str(num))
     updateHistory()
 
-
 def distancia(pos):
     return(math.sqrt(pos[0]*pos[0]+pos[2]*pos[2]))
+
+
+def write_log(r0, r1, winner, reason, time):
+    '''Write log file'''
+    # Get log text
+    log_str = r0.rstrip("\r\n")+","+str(r1).rstrip("\r\n")+","+str(winner.rstrip("\r\n"))+","+reason+","+time+"\n"
+    # Get relative path to logs dir
+    filePath = os.path.dirname(os.path.abspath(__file__))
+    filePath = filePath.replace('\\', '/')
+    filePath = filePath + "/../../logs/"
+    
+    # Create file name using date and time
+    file_date = datetime.datetime.now()
+    logFileName = file_date.strftime("log %m-%d-%y %H,%M,%S")
+    
+    filePath += logFileName + ".txt"
+
+    try:
+        # Write file
+        logsFile = open(filePath, "w")
+        logsFile.write(log_str)
+        logsFile.close()
+    except:
+        # If write file fails, most likely due to missing logs dir
+        print("Couldn't write log file, no log directory ./game/logs")
 
 # Not currently running the match
 currentlyRunning = False
@@ -311,13 +336,26 @@ while simulationRunning:
         first = False
     
     if robot0Obj.inSimulation:
+        if(robot0Obj.outOfDohyo() and robot1Obj.outOfDohyo()):
+            finished=True
+            robot0Obj.inSimulation=False
+            robot1Obj.inSimulation=False
+            write_log(robot0Obj._name,robot1Obj._name, "empate", "Salida dohyo", str(timeElapsed) )
+            supervisor.wwiSendText("draw")
+            
         if(robot0Obj.outOfDohyo()):
             finished=True
+            robot0Obj.inSimulation=False
+            robot1Obj.inSimulation=False
+            write_log(robot0Obj._name,robot1Obj._name, robot1Obj._name, "Salida dohyo", str(timeElapsed))
             supervisor.wwiSendText("lostJ1")
 
     if robot1Obj.inSimulation:
         if(robot1Obj.outOfDohyo()):
             finished=True
+            robot0Obj.inSimulation=False
+            robot1Obj.inSimulation=False
+            write_log(robot0Obj._name,robot1Obj._name, robot0Obj._name, "Salida dohyo", str(timeElapsed))
             supervisor.wwiSendText("lostJ2")
 
 
@@ -326,7 +364,6 @@ while simulationRunning:
         #sino
         #si uno supero los 20, perdió
 
-        print(str(r0ts)+" - "+str(r1ts))
         if max(r0ts, r1ts)>timeReloc and abs(r0ts-r1ts)<=3:
             relocate(numsReloc)
             numsReloc+=1
@@ -339,9 +376,15 @@ while simulationRunning:
 
         elif r0ts>timeOut:
             finished=True
+            robot0Obj.inSimulation=False
+            robot1Obj.inSimulation=False
+            write_log(robot0Obj._name,robot1Obj._name, robot1Obj._name, "Timeout", str(timeElapsed))
             supervisor.wwiSendText("lostJ1")
         elif r1ts>timeOut:
             finished=True
+            robot0Obj.inSimulation=False
+            robot1Obj.inSimulation=False
+            write_log(robot0Obj._name,robot1Obj._name, robot0Obj._name, "Timeout", str(timeElapsed))
             supervisor.wwiSendText("lostJ2")
 
 
@@ -387,6 +430,7 @@ while simulationRunning:
                     data = message.split(",", 1)
                     if len(data) > 1:
                         name, id = createController(0, data[1])
+                        robot0Obj._name=name
                         assignController(id, name)
                 else:
                     print("Please choose controllers before simulation starts.")
@@ -396,6 +440,7 @@ while simulationRunning:
                     data = message.split(",", 1)
                     if len(data) > 1:
                         name, id = createController(1, data[1])
+                        robot1Obj._name=name
                         assignController(id, name)
                 else:
                     print("Please choose controllers before simulation starts.")
@@ -420,6 +465,7 @@ while simulationRunning:
     # If the time is up
     if timeElapsed >= maxTime:
         finished = True
+        write_log(robot0Obj._name,robot1Obj._name, "empate", "Fin tiempo", str(timeElapsed))
         supervisor.wwiSendText("draw")
 
     # If the match is running
