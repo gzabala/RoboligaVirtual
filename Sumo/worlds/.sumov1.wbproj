@@ -10,5 +10,5 @@ orthographicViewHeight: 1
 textFiles: -1
 robotWindow: robot
 globalOptionalRendering: DistanceSensorRays
-renderingDevicePerspectives: Verde:colorPiso;1;32;0;0
 renderingDevicePerspectives: Rojo:colorPiso;1;32;0;0
+renderingDevicePerspectives: Verde:colorPiso;1;32;0;0

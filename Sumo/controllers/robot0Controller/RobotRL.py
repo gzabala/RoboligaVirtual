@@ -77,10 +77,10 @@ class RobotRL:
         return self.__senDistD.getValue()
 
     def getBI(self):
-        return self.__bumperI.getValue()
+        return bool(self.__bumperI.getValue())
 
     def getBD(self):
-        return self.__bumperD.getValue()
+        return bool(self.__bumperD.getValue())
 
     def step(self):
         return (self.__robot.step(self.__timeStep) != -1)
