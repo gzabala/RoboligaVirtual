@@ -9,6 +9,14 @@ import struct
 import math
 import datetime
 
+# Settings
+timeElapsed = 0
+lastTime = -1
+numReloc=0
+timeReloc=15
+timeOut=20
+lossDistance=0.76
+
 # Create the instance of the supervisor class
 supervisor = Supervisor()
 
@@ -118,7 +126,7 @@ class Robot:
         return self._timeStopped
 
     def outOfDohyo(self):
-        return(math.sqrt(self.position[0]*self.position[0]+self.position[2]*self.position[2])>0.78)
+        return(math.sqrt(self.position[0]*self.position[0]+self.position[2]*self.position[2])>lossDistance)
 
 def getPath(number: int) -> str:
     '''Get the path to the correct controller'''
@@ -308,12 +316,6 @@ resetControllerFile(1)
 # score0 = 0
 # score1 = 0
 
-# How long the game has been running for
-timeElapsed = 0
-lastTime = -1
-numsReloc=0
-timeReloc=15
-timeOut=20
 
 # Send message to robot window to perform setup
 supervisor.wwiSendText("startup")
@@ -365,8 +367,8 @@ while simulationRunning:
         #si uno supero los 20, perdió
 
         if max(r0ts, r1ts)>timeReloc and abs(r0ts-r1ts)<=3:
-            relocate(numsReloc)
-            numsReloc+=1
+            relocate(numReloc)
+            numReloc+=1
             robot0Obj._timeStopped = 0
             robot0Obj._stopped = False
             robot0Obj._stoppedTime = None
