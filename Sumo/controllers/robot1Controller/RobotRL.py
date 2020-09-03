@@ -48,10 +48,10 @@ class RobotRL:
         self.__ruedaDerecha.setVelocity(self.__vd)
 
     def getVI(self):
-        return self.__vi
+        return self.__vi*100/self.__max_velocity
 
     def getVD(self):
-        return self.__vd
+        return self.__vd*100/self.__max_velocity
 
     #Espera
     def esperar(self, duracion):
