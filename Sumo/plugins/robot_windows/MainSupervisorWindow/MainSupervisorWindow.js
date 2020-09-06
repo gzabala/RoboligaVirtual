@@ -111,14 +111,14 @@ function loadedController(id, name){
 	
 	if (id == 0){
 		//Set name and toggle to unload button for robot 0
-		document.getElementById("robot0Name").innerHTML = name;
+		document.getElementById("robot0Name").innerText = name;
 		robot0Name = name;
 		document.getElementById("load0").style.display = "none";
 		document.getElementById("unload0").style.display = "inline-block";
 	}
 	if (id == 1){
 		//Set name and toggle to unload button for robot 1
-		document.getElementById("robot1Name").innerHTML = name;
+		document.getElementById("robot1Name").innerText = name;
 		robot1Name = name;
 		document.getElementById("load1").style.display = "none";
 		document.getElementById("unload1").style.display = "inline-block";
@@ -130,7 +130,7 @@ function unloadedController(id){
 	if (id == 0){
 		//Reset name and toggle to load button for robot 0
 		document.getElementById("robot0File").value = "";
-		document.getElementById("robot0Name").innerHTML = "None";
+		document.getElementById("robot0Name").innerText = "None";
 		robot0Name = "Robot Rojo";
 		document.getElementById("unload0").style.display = "none";
 		document.getElementById("load0").style.display = "inline-block";
@@ -138,7 +138,7 @@ function unloadedController(id){
 	if (id == 1){
 		//Reset name and toggle to load button for robot 1
 		document.getElementById("robot1File").value = "";
-		document.getElementById("robot1Name").innerHTML = "None";
+		document.getElementById("robot1Name").innerText = "None";
 		robot1Name = "Robot Verde";
 		document.getElementById("unload1").style.display = "none";
 		document.getElementById("load1").style.display = "inline-block";
@@ -335,22 +335,22 @@ function hide_winning_screen(){
 }
 
 function lostJ1() {
-	document.getElementById("winning-team").innerHTML = "¡Ganó "+robot1Name+ "!"
+	document.getElementById("winning-team").innerText = "¡Ganó "+robot1Name+ "!"
 	endGame();
 }
 
 function lostJ2() {
-	document.getElementById("winning-team").innerHTML = "¡Ganó "+robot0Name+ "!"
+	document.getElementById("winning-team").innerText = "¡Ganó "+robot0Name+ "!"
 	endGame();
 }
 
 function draw() {
-	document.getElementById("winning-team").innerHTML = "¡Empate!"
+	document.getElementById("winning-team").innerText = "¡Empate!"
 	endGame();
 }
 
 function crash() {
-	document.getElementById("winning-team").innerHTML = "Cancelado"
+	document.getElementById("winning-team").innerText = "Cancelado"
 	endGame();
 }
 
@@ -358,16 +358,16 @@ function calculateWinner(name0,name1){
 	//if scores are the same
 	if (scores[0] == scores[1]){
 		//Show draw text
-		document.getElementById("winning-team").innerHTML = "Draw!"
+		document.getElementById("winning-team").innerText = "Draw!"
 	}else {
 		//Find index of highest scoring team
 		
 		if (scores[0] > scores[1]){
 			//Show robot 0 win text
-			document.getElementById("winning-team").innerHTML = name0 + " wins!"
+			document.getElementById("winning-team").innerText = name0 + " wins!"
 		} else {
 			//Show robot 1 win text
-			document.getElementById("winning-team").innerHTML = name1 + " wins!"
+			document.getElementById("winning-team").innerText = name1 + " wins!"
 		}
 	}
 
