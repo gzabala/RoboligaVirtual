@@ -31,8 +31,7 @@ class RobotRL:
         self.__ruedaIzquierda.setPosition(float("inf"))
         self.__ruedaDerecha.setPosition(float("inf"))
 
-        self.__vi=0
-        self.__vd=0
+        self.setVel(0, 0)
 
     #Velocidad de las ruedas
     def setVel(self, vi, vd):
