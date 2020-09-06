@@ -201,8 +201,9 @@ def assignController(num: int, name: str) -> None:
     
     if name == None:
         name = "None"
-    else:
-        name = name[:-1]
+
+    name = name.strip()
+
     if num == 0:
         supervisor.wwiSendText("loaded0," + name)
         
