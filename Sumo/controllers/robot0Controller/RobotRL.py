@@ -1,4 +1,5 @@
 from controller import Robot
+import colorsys
 
 class RobotRL:
 
@@ -67,7 +68,9 @@ class RobotRL:
 
     #sensores
     def getColorPiso(self):
-        return self.__mapeo(int.from_bytes(self.__camaraPiso.getImage(), "little"), 4281216556, 4292861922)
+        bgra = self.__camaraPiso.getImage()
+        hsv = colorsys.rgb_to_hsv(bgra[2]/255, bgra[1]/255, bgra[0]/255)
+        return hsv[2]*100
 
     def getDI(self):
         return self.__senDistI.getValue()
