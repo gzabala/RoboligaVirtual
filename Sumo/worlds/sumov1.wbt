@@ -68,7 +68,6 @@ DEF Rojo MicrobotRL {
 }
 DEF Verde MicrobotRL {
   translation 0.2 0.0217 0
-  rotation 0 1 0 3.14592
   name "Verde"
   controller "robot1Controller"
   extensionSlot [
