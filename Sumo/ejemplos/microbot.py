@@ -21,13 +21,13 @@ def buscar():
         return
 
 def irDerecha():
-    ro.setVel(-40, 40)
-
-def irIzquierda():
     ro.setVel(40, -40)
 
+def irIzquierda():
+    ro.setVel(-40, 40)
+
 def girar():
-    ro.setVel(60, -60)
+    ro.setVel(-60, 60)
 
 def retroceder():
     ro.setVel(-100, -100)
@@ -43,6 +43,6 @@ def noCaer():
         ro.esperar(1)
 
 while ro.step():
-    ro.setVel(-20, 20)
+    ro.setVel(20, -20)
     noCaer()
     buscar()
