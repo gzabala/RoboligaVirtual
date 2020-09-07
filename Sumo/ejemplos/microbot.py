@@ -42,7 +42,7 @@ def buscar():
 
 def noCaer():
     if (robot.getColorPiso() > 90):
-        parar()
+        retroceder()
         robot.esperar(2)
         irIzquierda()
         robot.esperar(1)
