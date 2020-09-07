@@ -1,46 +1,52 @@
 #RobotName: Parado
 from RobotRL import RobotRL
 
-ro=RobotRL()
+robot = RobotRL()
+
+di = 0
+dd = 0
 
 def recto():
-    ro.setVel(100,100)
+    robot.setVI(100)
+    robot.setVD(100)
+
+def retroceder():
+    robot.setVI(-100)
+    robot.setVD(-100)
+
+def irIzquierda():
+    robot.setVI(-40)
+    robot.setVD(40)
+
+def irDerecha():
+    robot.setVI(40)
+    robot.setVD(-40)
+
+def parar():
+    robot.setVI(0)
+    robot.setVD(0)
 
 def buscar():
-    di=ro.getDI()
-    dd=ro.getDD()
-    if(di<100 and dd<100):
+    global di, dd
+    di = robot.getDI()
+    dd = robot.getDD()
+    if ((di < 100) and (dd < 100)):
         recto()
         return
-    if(di==100 and dd<100):
+    if ((di == 100) and (dd < 100)):
         irDerecha()
         return
-    if(di<100 and dd==100):
+    if ((di < 100) and (dd == 100)):
         irIzquierda()
         return
 
-def irDerecha():
-    ro.setVel(40, -40)
-
-def irIzquierda():
-    ro.setVel(-40, 40)
-
-def girar():
-    ro.setVel(-60, 60)
-
-def retroceder():
-    ro.setVel(-100, -100)
-
-def parar():
-    ro.setVel(0,0)
-
 def noCaer():
-    if ro.getColorPiso()>90:
-        retroceder()
-        ro.esperar(2)
-        girar()
-        ro.esperar(1)
+    if (robot.getColorPiso() > 90):
+        parar()
+        robot.esperar(2)
+        irIzquierda()
+        robot.esperar(1)
 
-while ro.step():
-    
+while robot.step():
     parar()
+
