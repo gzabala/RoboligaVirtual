@@ -232,15 +232,15 @@ PROTO MicrobotRL [
         }
         device [
           RotationalMotor {
-            name "motorIzquierdo"
+            name "motorDerecho"
 			maxVelocity IS max_velocity
           }
           PositionSensor {
-            name "left wheel sensor"
+            name "right wheel sensor"
           }
         ]
         endPoint Solid {
-          name "left wheel"
+          name "right wheel"
           translation 0.038 -0.009 0.012
           rotation -1 0 0 0
           physics DEF WHEEL_PHYSICS Physics {
@@ -296,15 +296,15 @@ PROTO MicrobotRL [
         }
         device [
           RotationalMotor {
-            name "motorDerecho"
+            name "motorIzquierdo"
 			maxVelocity IS max_velocity
           }
           PositionSensor {
-            name "right wheel sensor"
+            name "left wheel sensor"
           }
         ]
         endPoint Solid {
-          name "right wheel"
+          name "left wheel"
           rotation -1 0 0 0
           translation -0.038 -0.009 0.012
           physics USE WHEEL_PHYSICS
