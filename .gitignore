@@ -1,3 +1,4 @@
+/releases
 Sumo/logs/*.txt
 Sumo/controllers/robot0Controller/robot0Controller.py
 Sumo/controllers/robot1Controller/robot1Controller.py
