@@ -22,10 +22,7 @@ function receive (message){
 	if (parts.length > 0){
 		switch (parts[0]){
 			case "alert":
-				let message = parts[1];
-				if (message) {
-					alert(message);
-				}
+				if (parts[1]) { alert(parts[1]); }
 				break;
 			case "startup":
 				//Call for set up the robot window
