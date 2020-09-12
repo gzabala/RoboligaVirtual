@@ -246,6 +246,9 @@ def relocate(num):
         robot0Obj.rotation=[0,1,0,4.71] #enfrentados
         robot1Obj.rotation=[0,1,0,1.57]
 
+    randomize(robot0Obj)
+    randomize(robot1Obj)
+
     robot0Obj.history.enqueue("Relocalizacion nro: "+str(num))
     updateHistory()
 
@@ -276,6 +279,12 @@ def write_log(r0, r1, winner, reason, time):
     except:
         # If write file fails, most likely due to missing logs dir
         print("Couldn't write log file, no log directory ./game/logs")
+
+def randomize(robot):
+    max_pos = 0.015
+    max_rot = 0.1
+    robot.position = [robot.position[0] + (random.random() * 2 - 1) * max_pos, robot.position[1], robot.position[2] + (random.random() * 2 - 1) * max_pos]
+    robot.rotation = [0, 1, 0, robot.rotation[3] + (random.random() * 2 - 1) * max_rot]
 
 # Not currently running the match
 currentlyRunning = False
@@ -336,6 +345,8 @@ first = True
 
 robot0Obj.position=[-0.2, 0.0217, 0]
 robot1Obj.position=[0.2, 0.0217, 0]
+randomize(robot0Obj)
+randomize(robot1Obj)
 
 # Until the match ends (also while paused)
 while simulationRunning:
