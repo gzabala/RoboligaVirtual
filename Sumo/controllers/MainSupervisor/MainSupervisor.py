@@ -60,7 +60,7 @@ class Robot:
     '''Robot object to hold values whether its in a base or holding a human'''
 
     def __init__(self, node):
-        
+
 
         self.wb_node = node
 
@@ -174,31 +174,35 @@ def resetControllerFile(number: int) -> None:
 
 def createController(number: int, fileData: list) -> list:
     '''Opens the controller at the file location and writes the data to it'''
-    filePath = getPath(number)
-    
-    if filePath == None:
+    try:
+        filePath = getPath(number)
+
+        if filePath == None:
+            return None, None
+
+        controllerFile = open(filePath, "w")
+        controllerFile.write(fileData)
+        controllerFile.close()
+
+        # If there is a name in the file
+        if "RobotName:" in fileData:
+            # Find the name
+            name = fileData[fileData.index("RobotName:") + 10:]
+            name = name.split("\n")[0]
+            # Return data with a name
+            return name, number
+
+        supervisor.wwiSendText("alert,ERROR: El robot no tiene nombre")
+        # Return data without a name
         return None, None
-
-    controllerFile = open(filePath, "w")
-    controllerFile.write(fileData)
-    controllerFile.close()
-
-    # If there is a name in the file
-    if "RobotName:" in fileData:
-        # Find the name
-        name = fileData[fileData.index("RobotName:") + 10:]
-        name = name.split("\n")[0]
-        # Return data with a name
-        return name, number
-
-    print("EL ROBOT NO TIENE NOMBRE")
-    # Return data without a name
-    return "SinNombre", number
+    except Exception as ex:
+        supervisor.wwiSendText("alert,ERROR: El archivo no es un controlador válido")
+        return None, None
 
 
 def assignController(num: int, name: str) -> None:
     '''Send message to robot window to say that controller has loaded and with what name'''
-    
+
     if name == None:
         name = "None"
 
@@ -206,7 +210,7 @@ def assignController(num: int, name: str) -> None:
 
     if num == 0:
         supervisor.wwiSendText("loaded0," + name)
-        
+
     if num == 1:
         supervisor.wwiSendText("loaded1," + name)
 
@@ -241,7 +245,7 @@ def relocate(num):
     elif int(num)==2:
         robot0Obj.rotation=[0,1,0,4.71] #enfrentados
         robot1Obj.rotation=[0,1,0,1.57]
-    
+
     robot0Obj.history.enqueue("Relocalizacion nro: "+str(num))
     updateHistory()
 
@@ -257,11 +261,11 @@ def write_log(r0, r1, winner, reason, time):
     filePath = os.path.dirname(os.path.abspath(__file__))
     filePath = filePath.replace('\\', '/')
     filePath = filePath + "/../../logs/"
-    
+
     # Create file name using date and time
     file_date = datetime.datetime.now()
     logFileName = file_date.strftime("log %m-%d-%y %H,%M,%S")
-    
+
     filePath += logFileName + ".txt"
 
     try:
@@ -343,16 +347,16 @@ while simulationRunning:
         robot0.restartController()
         robot1.restartController()
         first = False
-    
+
     if robot0Obj.inSimulation:
-        
+
         if(robot0Obj.outOfDohyo() and robot1Obj.outOfDohyo()):
             finished=True
             robot0Obj.inSimulation=False
             robot1Obj.inSimulation=False
             write_log(robot0Obj._name,robot1Obj._name, "Empate", "Salida dohyo ambos", str(timeElapsed) )
             supervisor.wwiSendText("draw")
-            
+
         if(robot0Obj.outOfDohyo()):
             finished=True
             robot0Obj.inSimulation=False
@@ -404,7 +408,7 @@ while simulationRunning:
         previousRunState = currentlyRunning
         #print("Run State:", currentlyRunning)
 
- 
+
     # Get the message in from the robot window(if there is one)
     message = supervisor.wwiReceiveText()
     # If there is a message
@@ -426,7 +430,7 @@ while simulationRunning:
                 # Reset both controller files
                 resetControllerFile(0)
                 resetControllerFile(1)
-                
+
                 # Reset the simulation
                 supervisor.simulationReset()
                 simulationRunning = False
@@ -434,14 +438,15 @@ while simulationRunning:
                 mainSupervisor.restartController()
 
             if parts[0] == "robot0File":
-                
+
                 # Load the robot 0 controller
                 if not gameStarted:
                     data = message.split(",", 1)
                     if len(data) > 1:
                         name, id = createController(0, data[1])
-                        robot0Obj._name=name
-                        assignController(id, name)
+                        if name is not None:
+                            robot0Obj._name=name
+                            assignController(id, name)
                 else:
                     print("Please choose controllers before simulation starts.")
             if parts[0] == "robot1File":
@@ -450,8 +455,9 @@ while simulationRunning:
                     data = message.split(",", 1)
                     if len(data) > 1:
                         name, id = createController(1, data[1])
-                        robot1Obj._name=name
-                        assignController(id, name)
+                        if name is not None:
+                            robot1Obj._name=name
+                            assignController(id, name)
                 else:
                     print("Please choose controllers before simulation starts.")
             if parts[0] == "robot0Unload":
