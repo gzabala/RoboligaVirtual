@@ -21,6 +21,12 @@ function receive (message){
 	//If there is a message
 	if (parts.length > 0){
 		switch (parts[0]){
+			case "alert":
+				let message = parts[1];
+				if (message) {
+					alert(message);
+				}
+				break;
 			case "startup":
 				//Call for set up the robot window
 				startup();
@@ -50,7 +56,7 @@ function receive (message){
 				break;
 			case "lostJ2":
 				lostJ2();
-				break;				
+				break;
 			case "draw":
 				//The game is over
 				draw();
@@ -78,7 +84,7 @@ function receive (message){
 			case "debug":
 				window.robotWindow.setTitle(parts[1]);
 				break;
-				
+
 		}
 	}
 }
@@ -86,11 +92,11 @@ function receive (message){
 function updateHistory(history0){
 	let text = ""
 
-	
+
 	let history0End = false;
 
 	let i = history0.length -1;
-	
+
 
 	while(!history0End){
 		text += "<tr id='historyrow'>";
@@ -108,7 +114,7 @@ function updateHistory(history0){
 
 function loadedController(id, name){
 	//A controller has been loaded into a robot id is 0 or 1 and name is the name of the robot
-	
+
 	if (id == 0){
 		//Set name and toggle to unload button for robot 0
 		document.getElementById("robot0Name").innerText = name;
@@ -173,16 +179,16 @@ function calculateTimeRemaining(done){
 	//Convert parts to strings
 	mins = String(mins)
 	seconds = String(seconds)
-	
+
 	//Add leading 0s if necessary
 	for (var i = 0; i < 2 - seconds.length; i++){
 		seconds = "0" + seconds;
 	}
-	
+
 	for (var i = 0; i < 2 - mins.length ; i++){
 		mins = "0" + mins;
 	}
-	
+
 	//Return the time string
 	return mins + ":" + seconds;
 }
@@ -200,16 +206,16 @@ function calculateTime(done){
 	//Convert parts to strings
 	mins = String(mins)
 	seconds = String(seconds)
-	
+
 	//Add leading 0s if necessary
 	for (var i = 0; i < 2 - seconds.length; i++){
 		seconds = "0" + seconds;
 	}
-	
+
 	for (var i = 0; i < 2 - mins.length ; i++){
 		mins = "0" + mins;
 	}
-	
+
 	//Return the time string
 	return mins + ":" + seconds;
 }
@@ -249,7 +255,7 @@ function resetPressed(){
 
 function openLoadController(robotNumber){
 	//When a load button is pressed - opens the file explorer window
-	
+
 	document.getElementById("robot" + robotNumber + "File").click();
 }
 
@@ -291,30 +297,30 @@ function fileOpened(id){
 	//When file 0 value is changed
 	//Get the files
 	var files = document.getElementById("robot"+id+"File").files;
-	
+
 	//If there are files
 	if (files.length > 0){
 		//Get the first file only
 		var file = files[0];
 		//Split at the .
 		var nameParts = file.name.split(".");
-		
+
 		//If there are parts to the name
 		if (nameParts.length > 1){
 			//If the last part is "py" - a python file
 			if(nameParts[nameParts.length - 1] == "py"){
 				//Create a file reader
 				var reader = new FileReader();
-				
+
 				//Set the function of the reader when it finishes loading
 				reader.onload = (function(reader){
 					return function(){
 						//Send the signal to the supervisor with the data from the file
 						window.robotWindow.send("robot"+id+"File," + reader.result);
-						
+
 					}
 				})(reader);
-				
+
 				//Read the file as udf-8 text
 				reader.readAsText(file);
 			}else{
@@ -325,7 +331,7 @@ function fileOpened(id){
 			//Tell the user to select a python file
 			alert("Please select a python file.");
 		}
-		
+
 	}
 }
 
@@ -361,7 +367,7 @@ function calculateWinner(name0,name1){
 		document.getElementById("winning-team").innerText = "Draw!"
 	}else {
 		//Find index of highest scoring team
-		
+
 		if (scores[0] > scores[1]){
 			//Show robot 0 win text
 			document.getElementById("winning-team").innerText = name0 + " wins!"
@@ -374,7 +380,7 @@ function calculateWinner(name0,name1){
 }
 
 function show_winning_screen(){
-	
+
 	//Show winning screen
   	document.getElementById("winning-screen").style.display = "inline-block";
   	visable = true;
