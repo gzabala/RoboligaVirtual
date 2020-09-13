@@ -1,0 +1,104 @@
+#VRML_SIM R2020a utf8
+WorldInfo {
+  basicTimeStep 16
+}
+Viewpoint {
+  orientation -0.9988274071885382 0.04409809216389781 0.019979212109759174 0.8516787472304467
+  position 0.09820144643393527 2.1904712787395244 2.058342366111915
+}
+TexturedBackground {
+}
+TexturedBackgroundLight {
+}
+Floor {
+  contactMaterial "tierra"
+  appearance Rubber {
+  }
+}
+DEF base Solid {
+  children [
+    Shape {
+      appearance PBRAppearance {
+        baseColorMap ImageTexture {
+          url [
+            "textures/dohyo.PNG"
+          ]
+        }
+        roughness 0.5
+        metalness 0
+      }
+      geometry DEF forma Cylinder {
+        height 0.0001
+        radius 0.75
+        side FALSE
+        subdivision 60
+      }
+    }
+  ]
+  name "base"
+  locked TRUE
+  translationStep 0
+  rotationStep 0
+}
+DEF Rojo MicrobotRL {
+  translation -0.2 0.0217 0
+  name "Rojo"
+  controller "robot0Controller"
+  extensionSlot [
+    DEF equipo Solid {
+      translation 0 0.024 0
+      children [
+        DEF placa Shape {
+          appearance PBRAppearance {
+            baseColor 1 0 0
+            metalness 0
+          }
+          geometry Cylinder {
+            height 0.003
+            radius 0.03
+          }
+          isPickable FALSE
+        }
+      ]
+      boundingObject USE placa
+      physics Physics {
+      }
+    }
+  ]
+}
+DEF Verde MicrobotRL {
+  translation 0.2 0.0217 0
+  name "Verde"
+  controller "robot1Controller"
+  extensionSlot [
+    DEF equipo Solid {
+      translation 0 0.024 0
+      children [
+        DEF placa Shape {
+          appearance PBRAppearance {
+            baseColor 0 1 0
+            metalness 0
+          }
+          geometry Cylinder {
+            height 0.003
+            radius 0.03
+          }
+          isPickable FALSE
+        }
+      ]
+      boundingObject USE placa
+      physics Physics {
+      }
+    }
+  ]
+}
+DEF MAINSUPERVISOR Robot {
+  children [
+    Receiver {
+      channel 1
+    }
+  ]
+  controller "TrainingSupervisor"
+  supervisor TRUE
+  window "TrainingSupervisorWindow"
+}

@@ -1,0 +1,225 @@
+
+
+@font-face { 
+  font-family: OpenSansBold; 
+  src: url('fonts/OpenSans-ExtraBold.ttf');
+ } 
+@font-face { 
+  font-family: OpenSans; 
+  src: url('fonts/OpenSans-Bold.ttf');
+ } 
+*{
+	font-family: OpenSans, sans-serif;
+}
+body{
+  background: white;
+}
+#controlTable{
+	margin:0 auto;
+	width: 100%;
+	vertical-align: middle;
+}
+
+#robotTable{
+	margin:0 auto;
+	width: 100%;
+}
+
+#infoTable{
+	width: 100%;
+}
+
+#timer{
+	font-size: 30px;
+  font-weight: bold;
+}
+
+.hidden{
+	display: none;
+}
+
+.score{
+	font-size: 28px;
+}
+
+.halfRow{
+	width: 49.5%;
+	height: 100%;
+}
+
+.smallSection{
+	width: 100%;
+	height: 14.7%;
+}
+
+.largeSection{
+	width: 100%;
+	height: 69.7%
+}
+
+.rowType1{
+	background-color: #dedede;
+}
+
+.rowType2{
+	background-color: #ffffff;
+  background: #8963BA;
+}
+
+.buttonRow{
+	width: 33%;
+}
+.simulationStateButton{
+	background-color: #95db40;
+	color: white;
+	width: 60px;
+  height: 60px;
+	text-align: center;
+	cursor: pointer;
+  border: none;
+  border-radius: 9999999px;
+}
+#runButton:disabled{
+  background-color: #9e9e9e;
+}
+#pauseButton:disabled{
+  background-color: #9e9e9e;
+}
+#resetButton:disabled{
+  background-color: #9e9e9e;
+}
+
+.simulationStateButton:hover{
+	background-color: #7EE8FA;
+}
+
+
+.buttonLoad{
+  cursor: pointer;
+  font-family: OpenSansBold;
+  text-transform: uppercase;
+  line-height: 1.5;
+  padding: 1em 2em;
+  font-size: 13px;
+  padding: 10px 15px;
+  border: 5px solid;
+  border-color: #5EBA53;
+  border-radius: 0px;
+  color: #5EBA53;
+  background: #eeeeee;
+}
+
+.buttonUnload{
+  cursor: pointer;
+  font-family: OpenSansBold;
+  text-transform: uppercase;
+  font-weight: bold;
+  line-height: 1.5;
+  padding: 1em 2em;
+  font-size: 13px;
+  padding: 10px 15px;
+  border: 5px solid;
+  border-color: #F24236;
+  border-radius: 0px;
+  color: #F24236;
+  background: #eeeeee;
+}
+
+.buttonLoad:disabled,.buttonUnload:disabled{
+  border-color: #9e9e9e;
+  color: #9e9e9e;
+  fill: none;
+  background: transparent;
+}
+
+.buttonUnload:hover:enabled{
+	border-color: #ff0000;
+	color: #ff0000;
+}
+
+
+.humansvg{
+  fill: transparent;
+  stroke-width: 4px;
+  stroke: black;
+}
+
+.actsvg{
+	fill: transparent;
+	stroke-width: 4px;
+	stroke: black;
+  }
+
+  .svg-icon {
+  fill: black;
+  stroke: black;
+  stroke-width: 1px;
+  }
+
+  .svg-button{
+  fill: black;
+  stroke: black;
+  }
+
+#history{
+  padding-top: 7%;
+  width: 100%;
+  height: 300px;
+  table-layout: fixed;
+}
+
+#historyrow{
+  height: 50%;
+}
+
+#historyrowtext{
+  width: 50%;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  text-align: center;
+  width:50%;
+  font-size: 12px;
+}
+
+.outerDiv {
+  height: 100%;
+  white-space: normal;
+  overflow: auto;
+}
+
+.innerDiv {
+  height: 100%;
+  overflow: hidden;
+}
+
+#winning-screen{
+  display: none;
+  position: absolute;
+  background-color: black;
+  opacity: 0.9;
+  width:100%; 
+  height:100%;
+  z-index: 1;
+}
+
+#winning-team{
+  color: white;
+  text-align: center;
+  margin-top: 100%;
+  margin-bottom: 100%;
+}
+
+.buttonRelocate{
+  cursor: pointer;
+  font-family: OpenSansBold;
+  text-transform: uppercase;
+  line-height: 1.5;
+  font-size: 13px;
+  padding: 10px 15px;
+  border: 5px solid;
+  border-color: rgb(83, 105, 186);
+  border-radius: 0px;
+  color: rgb(83, 105, 186);
+  background: #eeeeee;
+}
