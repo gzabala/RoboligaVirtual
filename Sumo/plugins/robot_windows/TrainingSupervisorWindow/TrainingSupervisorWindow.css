@@ -6,6 +6,11 @@ html, body, .fullscreen {
 }
 
 body {
+  transform: scale(0.85);
+  transform-origin: 0 0;
+  width: 118%;
+  height: 118%;
+
   background: rgb(3,0,56);
   background: linear-gradient(0deg, rgba(3,0,56,0.15029761904761907) 85%, rgba(255,255,255,0) 100%);
 }
