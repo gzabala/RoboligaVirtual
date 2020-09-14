@@ -138,7 +138,6 @@ class Robot:
 def send(message):
     separator = ","
     messageString = separator.join([str(each) for each in message])
-    print(messageString)
     supervisor.wwiSendText(messageString)
 
 def alert(msg):
@@ -450,66 +449,24 @@ while simulationRunning:
                 data = message.split(",", 2)
                 if len(data) > 2:
                     loadController(int(data[1]), data[2])
-            if parts[0] == "run":
-                # Start running the match
+            if parts[0] == "start":
                 currentlyRunning = True
                 lastTime = supervisor.getTime()
                 gameStarted = True
-            if parts[0] == "pause":
-                # Pause the match
-                currentlyRunning = False
-            if parts[0] == "reset":
-                #print("Reset message Received")
-                # Reset both controller files
+            if parts[0] == "next":
+                robot0.restartController()
+                robot1.restartController()
+                supervisor.simulationReset()
+            if parts[0] == "stop":
                 resetControllerFile(0)
                 resetControllerFile(1)
-
-                # Reset the simulation
                 supervisor.simulationReset()
                 simulationRunning = False
-                # Restart this supervisor
                 mainSupervisor.restartController()
 
-            if parts[0] == "robot0File":
-
-                # Load the robot 0 controller
-                if not gameStarted:
-                    data = message.split(",", 1)
-                    if len(data) > 1:
-                        name, id = createController(0, data[1])
-                        if name is not None:
-                            robot0Obj._name=name
-                            assignController(id, name)
-                else:
-                    print("Please choose controllers before simulation starts.")
-            if parts[0] == "robot1File":
-                # Load the robot 1 controller
-                if not gameStarted:
-                    data = message.split(",", 1)
-                    if len(data) > 1:
-                        name, id = createController(1, data[1])
-                        if name is not None:
-                            robot1Obj._name=name
-                            assignController(id, name)
-                else:
-                    print("Please choose controllers before simulation starts.")
-            if parts[0] == "robot0Unload":
-                # Unload the robot 0 controller
-                if not gameStarted:
-                    resetController(0)
-            if parts[0] == "robot1Unload":
-                # Unload the robot 1 controller
-                if not gameStarted:
-                    resetController(1)
-            if parts[0] == 'relocate':
-                data = message.split(",", 1)
-                if len(data) > 1:
-                    relocate(data[1])
-                pass
 
     # Send the update information to the robot window
-    supervisor.wwiSendText(
-        "update," + str(timeElapsed)+","+str(r0ts)+","+str(r1ts))
+    send(["update", timeElapsed, r0ts, r1ts])
 
     # If the time is up
     if timeElapsed >= maxTime:

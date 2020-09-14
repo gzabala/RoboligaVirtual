@@ -1,10 +1,15 @@
 let state = {
 	gameCount: 0,
+	time: 0,
+
 	robots: [
-		{name: null, wins: 0},
-		{name: null, wins: 0}
+		{name: null, wins: 0, time: 0},
+		{name: null, wins: 0, time: 0}
 	]
 };
+
+//The total time at the start
+var maxTime = 2.5 * 60;
 
 function openFile(input, validExtensions) {
   return new Promise((resolve, reject) => {
@@ -51,9 +56,17 @@ $("#load-green-controller-button").on("click", function () {
   });
 });
 
+$("#start-button").on("click", start);
+$("#next-button").on("click", next);
+$("#stop-button").on("click", stop);
+
 function loadController(id, code) {
   send(["loadController", id, code]);
 }
+
+function start() { send(["start"]); }
+function next() { send(["next"]); }
+function stop() { send(["stop"]); }
 
 let dispatchTable = {
 	alert: function (msg) {
@@ -63,7 +76,12 @@ let dispatchTable = {
 		if (msg) { console.log(msg); }
 	},
 	startup: function () {},
-	update: function () {},
+	update: function (time, r0ts, r1ts) {
+		state.time = time;
+		state.robots[0].time = r0ts;
+		state.robots[1].time = r1ts;
+		update();
+	},
 	loadedController: function (id, name) {
 		state.robots[id].name = name;
 		state.robots[id].wins = 0;
@@ -82,7 +100,61 @@ function update() {
 		}
 	}
 
-	
+	$("#game-time").text(calculateTimeRemaining(state.time));
+	$("#r0-time").text(calculateTime(state.robots[0].time));
+	$("#r1-time").text(calculateTime(state.robots[1].time));
+}
+
+function calculateTimeRemaining(done){
+	//Create the string for the time remaining (mm:ss) given the amount of time elapsed
+	//Convert to an integer
+	done = Math.floor(done);
+	//Calculate number of seconds remaining
+	var remaining = maxTime - done;
+	//Calculate seconds part of the time
+	var seconds = Math.floor(remaining % 60);
+	//Calculate the minutes part of the time
+	var mins = Math.floor((remaining - seconds) / 60);
+	//Convert parts to strings
+	mins = String(mins)
+	seconds = String(seconds)
+
+	//Add leading 0s if necessary
+	for (var i = 0; i < 2 - seconds.length; i++){
+		seconds = "0" + seconds;
+	}
+
+	for (var i = 0; i < 2 - mins.length ; i++){
+		mins = "0" + mins;
+	}
+
+	//Return the time string
+	return mins + ":" + seconds;
+}
+
+function calculateTime(done){
+	done = Math.floor(done);
+	//Calculate number of seconds remaining
+	var remaining = done;
+	//Calculate seconds part of the time
+	var seconds = Math.floor(remaining % 60);
+	//Calculate the minutes part of the time
+	var mins = Math.floor((remaining - seconds) / 60);
+	//Convert parts to strings
+	mins = String(mins)
+	seconds = String(seconds)
+
+	//Add leading 0s if necessary
+	for (var i = 0; i < 2 - seconds.length; i++){
+		seconds = "0" + seconds;
+	}
+
+	for (var i = 0; i < 2 - mins.length ; i++){
+		mins = "0" + mins;
+	}
+
+	//Return the time string
+	return mins + ":" + seconds;
 }
 
 function receive (message) {
