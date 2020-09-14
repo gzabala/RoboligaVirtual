@@ -23,6 +23,7 @@ supervisor = Supervisor()
 # Get this supervisor node - so that it can be rest when game restarts
 mainSupervisor = supervisor.getFromDef("MAINSUPERVISOR")
 
+
 # Maximum time for a match
 maxTime = 2.5 * 60
 
@@ -133,13 +134,24 @@ class Robot:
         posy=self.position[1]
         return(vel[1]>0.8 or posy>0.12)
 
+
+def send(message):
+    separator = ","
+    messageString = separator.join([str(each) for each in message])
+    print(messageString)
+    supervisor.wwiSendText(messageString)
+
+def alert(msg):
+    send(["alert", msg])
+
+def log(msg):
+    send(["log", msg])
+
 def getPath(number: int) -> str:
     '''Get the path to the correct controller'''
     # The current path to this python file
     filePath = os.path.dirname(os.path.abspath(__file__))
-
     filePath = filePath.replace('\\', '/')
-
     # Split into parts on \
     pathParts = filePath.split("/")
 
@@ -171,6 +183,10 @@ def resetControllerFile(number: int) -> None:
         controllerFile = open(filePath, "w")
         controllerFile.close()
 
+def loadController(id, code):
+    name = createController(id, code)
+    if name is not None:
+        assignController(id, name)
 
 def createController(number: int, fileData: list) -> list:
     '''Opens the controller at the file location and writes the data to it'''
@@ -178,7 +194,7 @@ def createController(number: int, fileData: list) -> list:
         filePath = getPath(number)
 
         if filePath == None:
-            return None, None
+            return None
 
         controllerFile = open(filePath, "w")
         controllerFile.write(fileData)
@@ -190,14 +206,14 @@ def createController(number: int, fileData: list) -> list:
             name = fileData[fileData.index("RobotName:") + 10:]
             name = name.split("\n")[0]
             # Return data with a name
-            return name, number
+            return name
 
         supervisor.wwiSendText("alert,ERROR: El robot no tiene nombre")
         # Return data without a name
-        return None, None
+        return None
     except Exception as ex:
         supervisor.wwiSendText("alert,ERROR: El archivo no es un controlador válido")
-        return None, None
+        return None
 
 
 def assignController(num: int, name: str) -> None:
@@ -209,10 +225,12 @@ def assignController(num: int, name: str) -> None:
     name = name.strip()
 
     if num == 0:
-        supervisor.wwiSendText("loaded0," + name)
+        robot0Obj._name = name
 
     if num == 1:
-        supervisor.wwiSendText("loaded1," + name)
+        robot1Obj._name = name
+
+    send(["loadedController", num, name])
 
 
 def resetController(num: int) -> None:
@@ -228,7 +246,6 @@ def resetController(num: int) -> None:
 def updateHistory():
     supervisor.wwiSendText(
         "historyUpdate" + "," + ",".join(robot0Obj.history.queue))
-
 
 
 def relocate(num):
@@ -296,6 +313,7 @@ gameStarted = False
 # Get the robot nodes by their DEF names
 robot0 = supervisor.getFromDef("Rojo")
 robot1 = supervisor.getFromDef("Verde")
+
 
 if robot0 == None:
     filePath = os.path.dirname(os.path.abspath(__file__))
@@ -428,6 +446,10 @@ while simulationRunning:
         parts = message.split(",")
         # If there are parts
         if len(parts) > 0:
+            if parts[0] == "loadController":
+                data = message.split(",", 2)
+                if len(data) > 2:
+                    loadController(int(data[1]), data[2])
             if parts[0] == "run":
                 # Start running the match
                 currentlyRunning = True

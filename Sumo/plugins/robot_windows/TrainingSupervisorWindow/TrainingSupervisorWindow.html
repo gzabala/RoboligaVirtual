@@ -20,13 +20,19 @@
         <div class="row">
           <div class="col">
             <h4>Robot Rojo</h4>
-            <h4>~</h4>
-            <button type="button" class="btn btn-danger btn-lg">Cargar controlador</button>
+            <h4 id="r0-name">~</h4>
+            <button id="load-red-controller-button" type="button" class="btn btn-danger btn-lg">
+              Cargar controlador
+              <input type="file" style="display: none;">
+            </button>
           </div>
           <div class="col">
             <h4>Robot Verde</h4>
-            <h4>~</h4>
-            <button type="button" class="btn btn-success btn-lg">Cargar controlador</button>
+            <h4 id="r1-name">~</h4>
+            <button id="load-green-controller-button" type="button" class="btn btn-success btn-lg">
+              Cargar controlador
+              <input type="file" style="display: none;">
+            </button>
           </div>
         </div>
         <hr>
@@ -58,5 +64,7 @@
     <!-- JQuery/Popper/Bootstrap -->
     <script src="libs/jquery/jquery-1.12.4.min.js" type="text/javascript"></script>
     <script src="libs/bootstrap-4.3.1/js/bootstrap.bundle.min.js" type="text/javascript"></script>
+
+    <script src="GUI.js" type="text/javascript"></script>
   </body>
 </html>
