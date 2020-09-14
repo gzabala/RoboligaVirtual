@@ -15,21 +15,19 @@
   <body>
     <div class="fullscreen">
       <div class="container text-center">
-        <h3>Training!</h3>
-        <hr>
-        <div class="row">
+        <div class="row mt-4">
           <div class="col">
             <h4>Robot Rojo</h4>
-            <h4 id="r0-name">~</h4>
-            <button id="load-red-controller-button" type="button" class="btn btn-danger btn-lg">
+            <h4 id="r0-name" class="font-weight-light">~</h4>
+            <button id="load-red-controller-button" type="button" class="btn btn-danger btn-lg mt-4">
               Cargar controlador
               <input type="file" style="display: none;">
             </button>
           </div>
           <div class="col">
             <h4>Robot Verde</h4>
-            <h4 id="r1-name">~</h4>
-            <button id="load-green-controller-button" type="button" class="btn btn-success btn-lg">
+            <h4 id="r1-name" class="font-weight-light">~</h4>
+            <button id="load-green-controller-button" type="button" class="btn btn-success btn-lg  mt-4">
               Cargar controlador
               <input type="file" style="display: none;">
             </button>
@@ -56,8 +54,28 @@
             </button>
           </div>
         </div>
+        <div class="row mb-4">
+          <div class="col">
+            <h1 id="time">0:00</h1>
+          </div>
+        </div>
+
+        <div class="row mb-4">
+          <div class="col">
+            <h3 id="time">0:00</h3>
+          </div>
+
+          <div class="col">
+            <h3 id="time">0:00</h3>
+          </div>
+        </div>
       </div>
       <div class="fullscreen bg-white">
+        <ul class="list-group">
+          <li class="list-group-item list-group-item-info">Tabla de posiciones <span class="float-right">(Partidas: <span id="game-count">0</span>)</span> </li>
+          <li class="list-group-item">1. <span id="r0-score" class="float-right">(0 / 0)</span></li>
+          <li class="list-group-item">2. <span id="r1-score" class="float-right">(0 / 0)</span> </li>
+        </ul>
       </div>
     </div>
 
