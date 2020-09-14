@@ -1,4 +1,10 @@
-
+let state = {
+	gameCount: 0,
+	robots: [
+		{name: null, wins: 0},
+		{name: null, wins: 0}
+	]
+};
 
 function openFile(input, validExtensions) {
   return new Promise((resolve, reject) => {
@@ -59,12 +65,24 @@ let dispatchTable = {
 	startup: function () {},
 	update: function () {},
 	loadedController: function (id, name) {
-		if (id == 0) {
-			$("#r0-name").text(name);
-		} else if (id == 1) {
-			$("#r1-name").text(name);
-		}
+		state.robots[id].name = name;
+		state.robots[id].wins = 0;
+		update();
 	},
+}
+
+function update() {
+	$("#game-count").text(state.gameCount);
+
+	for (let i = 0; i < state.robots.length; i++) {
+		let robot = state.robots[i];
+		let name = robot.name;
+		if (name) {
+			$("#r" + i + "-name").text(name);
+		}
+	}
+
+	
 }
 
 function receive (message) {
