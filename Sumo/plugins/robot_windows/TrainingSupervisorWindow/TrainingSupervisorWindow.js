@@ -1,5 +1,6 @@
 
 let state = {
+	running: false,
 	gameCount: 0,
 	time: 0,
 	scoreboard: {
@@ -47,7 +48,7 @@ $("#load-red-controller-button").on("click", function () {
   openFile(input, [".py"]).then(function (data) {
     loadController(0, data);
   }).catch(function (err) {
-    console.error(err);
+		if (err) { alert(err); }
   });
 });
 
@@ -56,7 +57,7 @@ $("#load-green-controller-button").on("click", function () {
   openFile(input, [".py"]).then(function (data) {
     loadController(1, data);
   }).catch(function (err) {
-    console.error(err);
+    if (err) { alert(err); }
   });
 });
 
@@ -68,9 +69,21 @@ function loadController(id, code) {
   send(["loadController", id, code]);
 }
 
-function start() { send(["start"]); }
-function next() { send(["next"]); }
-function stop() { send(["stop"]); }
+function start() {
+	send(["start"]);
+	state.running = true;
+	update();
+}
+
+function next() {
+	send(["next"]);
+}
+
+function stop() {
+	send(["stop"]);
+	state.running = false;
+	update();
+}
 
 let dispatchTable = {
 	alert: function (msg) {
@@ -110,13 +123,14 @@ let dispatchTable = {
 }
 
 function update() {
-	for (let i = 0; i < state.robots.length; i++) {
-		let robot = state.robots[i];
-		let name = robot.name;
-		if (name) {
-			$("#r" + i + "-name").text(name);
-		}
-	}
+	$("#load-red-controller-button").attr("disabled", state.running);
+	$("#load-green-controller-button").attr("disabled", state.running);
+	$("#start-button").attr("disabled", state.running);
+	$("#next-button").attr("disabled", !state.running);
+	$("#stop-button").attr("disabled", !state.running);
+
+	$("#r0-name").text(state.robots[0].name || "None");
+	$("#r1-name").text(state.robots[1].name || "None");
 
 	$("#game-time").text(calculateTimeRemaining(state.time));
 	$("#r0-time").text(calculateTime(state.robots[0].time));
