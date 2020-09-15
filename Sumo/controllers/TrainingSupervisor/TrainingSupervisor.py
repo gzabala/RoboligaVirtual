@@ -329,5 +329,4 @@ while supervisor.step(32) != -1:
         r1ts = robot1.timeStopped()
         timeElapsed = supervisor.getTime() - startTime
 
-        log(timeElapsed)
         send(["update", timeElapsed, r0ts, r1ts])
