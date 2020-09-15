@@ -199,22 +199,29 @@ def reset():
     robot1.rotation = randomizeRotation([0, 1, 0, 0])
     robot1.restartController()
 
+def crash():
+    send(["crash"])
+    reset()
+
+def draw():
+    send(["gameEnd", -1])
+    reset()
+
+def win(robot):
+    send(["gameEnd", robot.id])
+    reset()
+
 def checkForGameEnd():
     if(robot0.outOfDohyo() and robot1.outOfDohyo()):
-        send(["gameEnd", -1])
-        reset()
+        draw()
     if(robot0.outOfDohyo()):
-        send(["gameEnd", 1])
-        reset()
+        win(robot1)
     if(robot1.outOfDohyo()):
-        send(["gameEnd", 0])
-        reset()
+        win(robot0)
     if timeElapsed >= maxTime:
-        send(["gameEnd", -1])
-        reset()
+        draw()
     if(robot0.crashed() or robot1.crashed()):
-        send(["crash"])
-        reset()
+        crash()
 
 
 def checkForRelocation():
@@ -232,12 +239,10 @@ def checkForRelocation():
         robot1._stopped = False
         robot1._stoppedTime = None
 
-    elif r0ts>timeOut:
-        reset()
-        send(["gameEnd", 1])
-    elif r1ts>timeOut:
-        reset()
-        send(["gameEnd", 0])
+    elif r0ts > timeOut:
+        win(robot1)
+    elif r1ts > timeOut:
+        win(robot0)
 
 
 def relocate(num):
@@ -284,8 +289,7 @@ def checkIncomingMessages():
                 gameStarted = True
                 lastTime = supervisor.getTime()
             if parts[0] == "next":
-                reset()
-                send(["gameEnd", -1])
+                draw()
             if parts[0] == "stop":
                 robot0.clearController()
                 robot1.clearController()
