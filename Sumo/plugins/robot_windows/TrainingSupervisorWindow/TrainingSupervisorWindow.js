@@ -1,7 +1,11 @@
+
 let state = {
 	gameCount: 0,
 	time: 0,
-
+	scoreboard: {
+		dirty: true,
+		positions: []
+	},
 	robots: [
 		{name: null, wins: 0, time: 0},
 		{name: null, wins: 0, time: 0}
@@ -87,11 +91,13 @@ let dispatchTable = {
 		state.robots[id].wins = 0;
 		update();
 	},
+	gameEnd: function (winnerId) {
+		state.robots[winnerId].wins++;
+
+	}
 }
 
 function update() {
-	$("#game-count").text(state.gameCount);
-
 	for (let i = 0; i < state.robots.length; i++) {
 		let robot = state.robots[i];
 		let name = robot.name;
@@ -103,6 +109,34 @@ function update() {
 	$("#game-time").text(calculateTimeRemaining(state.time));
 	$("#r0-time").text(calculateTime(state.robots[0].time));
 	$("#r1-time").text(calculateTime(state.robots[1].time));
+
+	if (state.scoreboard.dirty) {
+		state.scoreboard.dirty = false;
+
+		let $board = $("#scoreboard");
+		$board.html("");
+
+		$board
+			.append($("<li>")
+				.addClass("list-group-item")
+				.addClass("list-group-item-info")
+				.append($("<span>").text("Tabla de posiciones"))
+				.append($("<span>")
+					.addClass("float-right")
+					.text("(Partidas : " + state.gameCount + ")")));
+
+		var positions = state.scoreboard.positions.map(i => state.robots[i]);
+		for (let i = 0; i < positions.length; i++) {
+			let robot = positions[i];
+			$board
+			.append($("<li>")
+				.addClass("list-group-item")
+				.append($("<span>").text((i + 1).toString() + ". " + robot.name))
+				.append($("<span>")
+					.addClass("float-right")
+					.text("(" + robot.wins + " / " + state.gameCount + ")")));
+		}
+	}
 }
 
 function calculateTimeRemaining(done){
@@ -169,7 +203,8 @@ function receive (message) {
 	}
 }
 
-window.onload = function(){
+window.onload = function() {
+	update();
 	window.robotWindow = webots.window();
 	window.robotWindow.setTitle('Entrenamiento');
 	window.robotWindow.receive = receive;
