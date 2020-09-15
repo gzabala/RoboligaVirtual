@@ -53,6 +53,11 @@ class Robot:
     def setMaxVelocity(self, vel: float) -> None:
         self.wb_node.getField('max_velocity').setSFFloat(vel)
 
+    def resetTimeStopped(self):
+        self._timeStopped = 0
+        self._stopped = False
+        self._stoppedTime = None
+
     def _isStopped(self) -> bool:
         vel = self.wb_node.getVelocity()
         robotStopped = abs(vel[0]) < 0.01 and abs(vel[1]) < 0.01 and abs(vel[2]) < 0.01
@@ -188,11 +193,15 @@ def randomizePosition(vector):
             randomize(vector[2], max_pos)]
 
 def reset():
+    global startTime
+    startTime = supervisor.getTime()
     supervisor.simulationResetPhysics()
+    robot0.resetTimeStopped()
     robot0.resetPhysics()
     robot0.position = randomizePosition([-0.2, 0.0217, 0])
     robot0.rotation = randomizeRotation([0, 1, 0, 0])
     robot0.restartController()
+    robot1.resetTimeStopped()
     robot1.resetPhysics()
     robot1.position = randomizePosition([0.2, 0.0217, 0])
     robot1.rotation = randomizeRotation([0, 1, 0, 0])
@@ -231,12 +240,8 @@ def checkForRelocation():
     if max(r0ts, r1ts) > TIME_RELOC and abs(r0ts-r1ts) <= 3:
         relocate(numReloc)
         numReloc += 1
-        robot0._timeStopped = 0
-        robot0._stopped = False
-        robot0._stoppedTime = None
-        robot1._timeStopped = 0
-        robot1._stopped = False
-        robot1._stoppedTime = None
+        robot0.resetTimeStopped()
+        robot1.resetTimeStopped()
 
     elif r0ts > TIME_OUT:
         win(robot1)
@@ -261,7 +266,6 @@ def relocate(num):
 
 
 def checkIncomingMessages():
-    global lastTime, gameStarted, simulationRunning
     # Get the message in from the robot window(if there is one)
     message = supervisor.wwiReceiveText()
     # If there is a message
@@ -285,8 +289,6 @@ def checkIncomingMessages():
                         send(["loadedController", id, name])
             if parts[0] == "start":
                 reset()
-                gameStarted = True
-                lastTime = supervisor.getTime()
             if parts[0] == "next":
                 draw()
             if parts[0] == "stop":
@@ -301,10 +303,9 @@ def checkIncomingMessages():
 r0ts = 0
 r1ts = 1
 timeElapsed = 0
-lastTime = -1
 numReloc=0
+startTime = None
 
-gameStarted = False
 
 robot0 = Robot(0, supervisor.getFromDef("Rojo"))
 robot1 = Robot(1, supervisor.getFromDef("Verde"))
@@ -320,14 +321,13 @@ robot1.restartController()
 while supervisor.step(32) != -1:
     checkIncomingMessages()
 
-    if gameStarted:
+    if startTime is not None:
         checkForGameEnd()
         checkForRelocation()
 
         r0ts = robot0.timeStopped()
         r1ts = robot1.timeStopped()
-        frameTime = supervisor.getTime() - lastTime
-        timeElapsed = timeElapsed + frameTime
-        lastTime = supervisor.getTime()
+        timeElapsed = supervisor.getTime() - startTime
 
+        log(timeElapsed)
         send(["update", timeElapsed, r0ts, r1ts])
