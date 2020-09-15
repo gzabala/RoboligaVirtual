@@ -291,7 +291,6 @@ def checkIncomingMessages():
                 robot1.restartController()
 
                 supervisor.simulationReset()
-                simulationRunning = False
                 mainSupervisor.restartController()
 
 
@@ -302,7 +301,6 @@ lastTime = -1
 numReloc=0
 
 gameStarted = False
-simulationRunning = True
 
 robot0 = Robot(0, supervisor.getFromDef("Rojo"))
 robot1 = Robot(1, supervisor.getFromDef("Verde"))
@@ -315,7 +313,7 @@ robot0.restartController()
 robot1.restartController()
 
 
-while simulationRunning:
+while supervisor.step(32) != -1:
     checkIncomingMessages()
 
     if gameStarted:
@@ -329,6 +327,3 @@ while simulationRunning:
         lastTime = supervisor.getTime()
 
         send(["update", timeElapsed, r0ts, r1ts])
-
-    if supervisor.step(32) == -1:
-        simulationRunning = False
