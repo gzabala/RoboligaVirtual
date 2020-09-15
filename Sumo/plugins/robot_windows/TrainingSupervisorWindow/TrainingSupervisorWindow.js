@@ -25,7 +25,7 @@ function openFile(input, validExtensions) {
         return reject(null);
       }
       if (!validExtensions.some(ext => file.name.endsWith(ext))) {
-        return reject("Por favor seleccione un archivo de Python.");
+        return reject("Por favor seleccione un archivo " + validExtensions.join(" o "));
       }
 
       let reader = new FileReader();
@@ -45,8 +45,8 @@ function openFile(input, validExtensions) {
 
 $("#load-red-controller-button").on("click", function () {
   let input = $(this).find("input").get(0);
-  openFile(input, [".py"]).then(function (data) {
-    loadController(0, data);
+  openFile(input, [".py"]).then(function (code) {
+    send(["loadController", 0, code]);
   }).catch(function (err) {
 		if (err) { alert(err); }
   });
@@ -54,36 +54,28 @@ $("#load-red-controller-button").on("click", function () {
 
 $("#load-green-controller-button").on("click", function () {
   let input = $(this).find("input").get(0);
-  openFile(input, [".py"]).then(function (data) {
-    loadController(1, data);
+  openFile(input, [".py"]).then(function (code) {
+    send(["loadController", 1, code]);
   }).catch(function (err) {
     if (err) { alert(err); }
   });
 });
 
-$("#start-button").on("click", start);
-$("#next-button").on("click", next);
-$("#stop-button").on("click", stop);
-
-function loadController(id, code) {
-  send(["loadController", id, code]);
-}
-
-function start() {
+$("#start-button").on("click", function () {
 	send(["start"]);
 	state.running = true;
 	update();
-}
+});
 
-function next() {
+$("#next-button").on("click", function () {
 	send(["next"]);
-}
+});
 
-function stop() {
+$("#stop-button").on("click", function () {
 	send(["stop"]);
 	state.running = false;
 	update();
-}
+});
 
 let dispatchTable = {
 	alert: function (msg) {
@@ -155,12 +147,12 @@ function update() {
 		for (let i = 0; i < positions.length; i++) {
 			let robot = positions[i];
 			$board
-			.append($("<li>")
-				.addClass("list-group-item")
-				.append($("<span>").text((i + 1).toString() + ". " + robot.name))
-				.append($("<span>")
-					.addClass("float-right")
-					.text("(" + robot.wins + " / " + state.gameCount + ")")));
+				.append($("<li>")
+					.addClass("list-group-item")
+					.append($("<span>").text((i + 1).toString() + ". " + robot.name))
+					.append($("<span>")
+						.addClass("float-right")
+						.text("(" + robot.wins + " / " + state.gameCount + ")")));
 		}
 	}
 }
