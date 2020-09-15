@@ -276,7 +276,9 @@ def checkIncomingMessages():
                         name = robot0.loadController(code)
                     elif id == 1:
                         name = robot1.loadController(code)
-                    send(["loadedController", id, name])
+
+                    if name != None:
+                        send(["loadedController", id, name])
             if parts[0] == "start":
                 reset()
                 gameStarted = True
@@ -289,7 +291,6 @@ def checkIncomingMessages():
                 robot1.clearController()
                 robot0.restartController()
                 robot1.restartController()
-
                 supervisor.simulationReset()
                 mainSupervisor.restartController()
 
