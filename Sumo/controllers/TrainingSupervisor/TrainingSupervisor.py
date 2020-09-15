@@ -10,11 +10,10 @@ import math
 import datetime
 
 # Settings
-timeReloc=15
-timeOut=20
-lossDistance=0.76
-maxTime = 2.5 * 60
-DEFAULT_MAX_VELOCITY = 30
+TIME_RELOC=15
+TIME_OUT=20
+LOSS_DIST=0.76
+MAX_TIME = 2.5 * 60
 
 supervisor = Supervisor()
 mainSupervisor = supervisor.getFromDef("MAINSUPERVISOR")
@@ -82,7 +81,7 @@ class Robot:
         return self._timeStopped
 
     def outOfDohyo(self) ->bool:
-        return(math.sqrt(self.position[0]*self.position[0]+self.position[2]*self.position[2])>lossDistance)
+        return(math.sqrt(self.position[0]*self.position[0]+self.position[2]*self.position[2])>LOSS_DIST)
 
     def crashed(self):
         vel = self.wb_node.getVelocity()
@@ -218,7 +217,7 @@ def checkForGameEnd():
         win(robot1)
     if(robot1.outOfDohyo()):
         win(robot0)
-    if timeElapsed >= maxTime:
+    if timeElapsed >= MAX_TIME:
         draw()
     if(robot0.crashed() or robot1.crashed()):
         crash()
@@ -229,7 +228,7 @@ def checkForRelocation():
     #Si tienen una diferencia de 3 o menos y uno de los dos superó los 15, mandamos los dos a reloquearse
     #sino
     #si uno supero los 20, perdió
-    if max(r0ts, r1ts)>timeReloc and abs(r0ts-r1ts)<=3:
+    if max(r0ts, r1ts) > TIME_RELOC and abs(r0ts-r1ts) <= 3:
         relocate(numReloc)
         numReloc += 1
         robot0._timeStopped = 0
@@ -239,9 +238,9 @@ def checkForRelocation():
         robot1._stopped = False
         robot1._stoppedTime = None
 
-    elif r0ts > timeOut:
+    elif r0ts > TIME_OUT:
         win(robot1)
-    elif r1ts > timeOut:
+    elif r1ts > TIME_OUT:
         win(robot0)
 
 
