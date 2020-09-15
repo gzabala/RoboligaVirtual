@@ -79,7 +79,7 @@ let dispatchTable = {
 	log: function (msg){
 		if (msg) { console.log(msg); }
 	},
-	startup: function () {},
+	crash: function () { console.log("CRASH!"); },
 	update: function (time, r0ts, r1ts) {
 		state.time = time;
 		state.robots[0].time = r0ts;
@@ -92,8 +92,20 @@ let dispatchTable = {
 		update();
 	},
 	gameEnd: function (winnerId) {
-		state.robots[winnerId].wins++;
+		state.gameCount++;
+		let winner = state.robots[winnerId];
+		if (winner) {
+			winner.wins++;
 
+			if (state.robots[0].wins > state.robots[1].wins) {
+				state.scoreboard.positions = [0, 1];
+			} else if (state.robots[1].wins > state.robots[0].wins) {
+				state.scoreboard.positions = [1, 0];
+			}
+		}
+		state.scoreboard.dirty = true;
+		update();
+		console.log(JSON.stringify(state));
 	}
 }
 
