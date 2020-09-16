@@ -1,4 +1,7 @@
 #VRML_SIM R2020a utf8
+#Roboliga Sumo World
+#   Created by Ricardo Moran and Gonzalo Zabala (CAETI - UAI) 
+#
 WorldInfo {
   basicTimeStep 16
 }
