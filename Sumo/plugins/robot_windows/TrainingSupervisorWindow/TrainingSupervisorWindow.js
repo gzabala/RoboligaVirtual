@@ -149,10 +149,15 @@ function update() {
 			$board
 				.append($("<li>")
 					.addClass("list-group-item")
+					.addClass("d-flex")
+					.addClass("justify-content-between")
+					.addClass("align-items-center")
 					.append($("<span>").text((i + 1).toString() + ". " + robot.name))
 					.append($("<span>")
-						.addClass("float-right")
-						.text("(" + robot.wins + " / " + state.gameCount + ")")));
+						.addClass("badge")
+						.addClass(i == 0 ? "badge-danger": "badge-success")
+						.addClass("badge-pill")
+						.text(robot.wins.toString())));
 		}
 	}
 }
