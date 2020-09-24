@@ -263,6 +263,9 @@ def relocate(num):
     elif int(num) == 2: #enfrentados
         robot0.rotation = randomizeRotation([0,1,0,4.71])
         robot1.rotation = randomizeRotation([0,1,0,1.57])
+    else: #Con la misma rotación con la que venían (pero parados!)
+        robot0.rotation = randomizeRotation([0,1,0,robot0.rotation[3]])
+        robot1.rotation = randomizeRotation([0,1,0,robot1.rotation[3]])
 
 
 def checkIncomingMessages():
