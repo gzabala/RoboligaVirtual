@@ -3,6 +3,10 @@ MainSupervisorWindow.js v2
 
 Changelog:
  - Added human loaded indicator
+ 
+
+Modified by Ricardo Moran and Gonzalo Zabala (CAETI - UAI) 
+
 */
 
 

@@ -1,5 +1,5 @@
-"""Supervisor Controller Prototype v1
-   Written by Robbie Goldman and Alfred Roberts
+"""Roboliga Supervisor Controller v1
+   Written by Ricardo Moran and Gonzalo Zabala (CAETI - UAI) based on the work of Robbie Goldman and Alfred Roberts
 """
 
 from controller import Supervisor

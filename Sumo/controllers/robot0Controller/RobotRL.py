@@ -1,3 +1,7 @@
+"""Roboliga Robot class v1
+   Written by Ricardo Moran and Gonzalo Zabala (CAETI - UAI) 
+"""
+
 from controller import Robot
 import colorsys
 

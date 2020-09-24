@@ -4,6 +4,7 @@
 # documentation url: https://www.cyberbotics.com/doc/guide/microbot
 # Basado en BOT120 PICAXE-20X2 Microbot (Revolution Education Ltd.)
 # This small robot is used for education with PICAXE programming tools
+# Modified by Ricardo Moran and Gonzalo Zabala (CAETI - UAI) 
 
 PROTO MicrobotRL [
   field SFVec3f    translation      0 0.0409483 0.685 # Is `Transform.translation`.
