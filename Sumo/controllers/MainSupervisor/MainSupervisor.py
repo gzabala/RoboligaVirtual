@@ -233,21 +233,18 @@ def updateHistory():
 
 def relocate(num):
     #num indica el nro de vez que lo relocaliza
-    robot0Obj.position=[-0.2, 0.0217, 0]
-    robot1Obj.position=[0.2, 0.0217, 0]
+    robot0Obj.position = randomizePosition([-0.2, 0.0217, 0])
+    robot1Obj.position = randomizePosition([0.2, 0.0217, 0])
 
-    if int(num)==0: #Mira uno para cada lado, hacia afuera
-        robot0Obj.rotation=[0,1,0,1.57]
-        robot1Obj.rotation=[0,1,0,4.71]
-    elif int(num)==1:
-        robot0Obj.rotation=[0,1,0,3.15] #Como en el arranque pero al revés
-        robot1Obj.rotation=[0,1,0,0]
-    elif int(num)==2:
-        robot0Obj.rotation=[0,1,0,4.71] #enfrentados
-        robot1Obj.rotation=[0,1,0,1.57]
-
-    randomize(robot0Obj)
-    randomize(robot1Obj)
+    if int(num) == 0: #Mira uno para cada lado, hacia afuera
+        robot0Obj.rotation = randomizeRotation([0,1,0,1.57])
+        robot1Obj.rotation = randomizeRotation([0,1,0,4.71])
+    elif int(num) == 1: #Como en el arranque pero al revés
+        robot0Obj.rotation = randomizeRotation([0,1,0,3.15])
+        robot1Obj.rotation = randomizeRotation([0,1,0,0])
+    elif int(num) == 2: #enfrentados
+        robot0Obj.rotation = randomizeRotation([0,1,0,4.71])
+        robot1Obj.rotation = randomizeRotation([0,1,0,1.57])
 
     robot0Obj.history.enqueue("Relocalizacion nro: "+str(num))
     updateHistory()
@@ -280,11 +277,17 @@ def write_log(r0, r1, winner, reason, time):
         # If write file fails, most likely due to missing logs dir
         print("Couldn't write log file, no log directory ./game/logs")
 
-def randomize(robot):
+def randomize(value, max):
+    return value + (random.random() * 2 - 1) * max
+
+def randomizeRotation(vector):
+    return [vector[0], vector[1], vector[2], randomize(vector[3], 0.1)]
+
+def randomizePosition(vector):
     max_pos = 0.015
-    max_rot = 0.1
-    robot.position = [robot.position[0] + (random.random() * 2 - 1) * max_pos, robot.position[1], robot.position[2] + (random.random() * 2 - 1) * max_pos]
-    robot.rotation = [0, 1, 0, robot.rotation[3] + (random.random() * 2 - 1) * max_rot]
+    return [randomize(vector[0], max_pos),
+            vector[1],
+            randomize(vector[2], max_pos)]
 
 # Not currently running the match
 currentlyRunning = False
@@ -343,10 +346,11 @@ supervisor.wwiSendText("startup")
 # For checking the first update with the game running
 first = True
 
-robot0Obj.position=[-0.2, 0.0217, 0]
-robot1Obj.position=[0.2, 0.0217, 0]
-randomize(robot0Obj)
-randomize(robot1Obj)
+robot0Obj.position = randomizePosition([-0.2, 0.0217, 0])
+robot0Obj.rotation = randomizeRotation([0, 1, 0, 0])
+robot1Obj.position = randomizePosition([0.2, 0.0217, 0])
+robot1Obj.rotation = randomizeRotation([0, 1, 0, 0])
+
 
 # Until the match ends (also while paused)
 while simulationRunning:
