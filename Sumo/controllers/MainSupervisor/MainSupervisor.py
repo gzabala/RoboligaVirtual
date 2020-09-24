@@ -245,9 +245,6 @@ def relocate(num):
     elif int(num) == 2: #enfrentados
         robot0Obj.rotation = randomizeRotation([0,1,0,4.71])
         robot1Obj.rotation = randomizeRotation([0,1,0,1.57])
-    else: #Con la misma rotación con la que venían (pero parados!)
-        robot0Obj.rotation = randomizeRotation([0,1,0,robot0Obj.rotation[3]])
-        robot1Obj.rotation = randomizeRotation([0,1,0,robot1Obj.rotation[3]])
 
     robot0Obj.history.enqueue("Relocalizacion nro: "+str(num))
     updateHistory()
