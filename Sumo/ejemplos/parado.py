@@ -1,6 +1,3 @@
-"""Roboliga example code
-   Written by Ricardo Moran and Gonzalo Zabala (CAETI - UAI) 
-"""
 #RobotName: Parado
 from RobotRL import RobotRL
 

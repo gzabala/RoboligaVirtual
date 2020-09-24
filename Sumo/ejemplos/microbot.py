@@ -1,7 +1,3 @@
-"""Roboliga example code
-   Written by Ricardo Moran and Gonzalo Zabala (CAETI - UAI) 
-"""
-
 #RobotName: Paulina
 from RobotRL import RobotRL
 
