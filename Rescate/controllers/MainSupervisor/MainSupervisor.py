@@ -8,7 +8,9 @@ import random
 import struct
 import math
 import datetime
-
+import threading
+import ControllerUploader
+import glob
 
 # Create the instance of the supervisor class
 supervisor = Supervisor()
@@ -22,9 +24,13 @@ maxTime = maxTimeMinute * 60
 
 DEFAULT_MAX_VELOCITY = 6.28
 
+robotApiDetection = False
+
+pointsMultiplier = 1
+
 
 class Queue:
-    #Simple queue data structure 
+    #Simple queue data structure
     def __init__(self):
         self.queue = []
 
@@ -54,7 +60,7 @@ class RobotHistory(Queue):
 
         if len(self.queue) > 8:
             self.dequeue()
-        
+
         return self.queue.append(data)
 
     def update_master_history(self, data):
@@ -75,8 +81,9 @@ class Robot:
         #webots node
         self.wb_node = node
 
-        self.wb_translationField = self.wb_node.getField('translation')
-        self.wb_rotationField = self.wb_node.getField('rotation')
+        if self.wb_node != None:
+            self.wb_translationField = self.wb_node.getField('translation')
+            self.wb_rotationField = self.wb_node.getField('rotation')
 
         self.inCheckpoint = True
         self.inSwamp = True
@@ -97,7 +104,7 @@ class Robot:
 
         self.startingTile = None
 
-        self.inSimulation = True
+        self.inSimulation = False
 
         self.name = "NO_TEAM_NAME"
 
@@ -126,7 +133,7 @@ class Robot:
     def _isStopped(self) -> bool:
         vel = self.wb_node.getVelocity()
         return abs(vel[0]) < 0.01 and abs(vel[1]) < 0.01 and abs(vel[2]) < 0.01
-        
+
 
     def timeStopped(self) -> float:
         self.stopped = self._isStopped()
@@ -150,23 +157,48 @@ class Robot:
 
         return self.robot_timeStopped
 
-    def increaseScore(self, score: int) -> None:
+    def increaseScore(self, score: int, multiplier = 1.0) -> None:
         if self._score + score < 0:
             self._score = 0
         else:
-            self._score += score
+            self._score += int(score * multiplier)
 
     def getScore(self) -> int:
         return self._score
-    
+
     def get_log_str(self):
         #Create a string of all events that the robot has done
         history = self.history.master_history
         log_str = ""
         for event in history:
             log_str += str(event[0]) + " " + event[1] + "\n"
-            
+
         return log_str
+
+    def set_starting_orientation(self):
+        '''Gets starting orientation for robot using wall data from starting tile'''
+        # Get starting tile walls
+        top = self.startingTile.wb_node.getField("topWall").getSFBool()
+        right = self.startingTile.wb_node.getField("rightWall").getSFBool()
+        bottom = self.startingTile.wb_node.getField("bottomWall").getSFBool()
+        left = self.startingTile.wb_node.getField("leftWall").getSFBool()
+
+        # top: 0
+        # left: pi/2
+        # right: -pi/2
+        # bottom: pi
+        pi = 3.14
+        walls = [[top, 0],[right, -pi/2],[bottom, pi],[left, pi/2]]
+        direction = 0
+
+        for i in range(len(walls)):
+            # If there isn't a wall in the direction
+            if not walls[i][0]:
+                direction = walls[i][1]
+                break
+
+        self.rotation = [0,1,0,direction]
+
 
 
 class Human():
@@ -231,7 +263,7 @@ class Human():
             return 'U'
         elif self._victim_type == 'stable':
             return 'S'
-        elif self._victim_type == 'heat': # Temperature victim
+        elif self._victim_type == 'Heat': # Temperature victim
             return 'T'
         else:
             return self._victim_type
@@ -276,7 +308,7 @@ class Human():
                 return True
 
         return False
-        
+
 
 
 
@@ -324,87 +356,20 @@ class StartTile(Tile):
         self.wb_node = wb_node
 
 
-def getPath(number: int) -> str:
-    '''Get the path to the correct controller'''
-    # The current path to this python file
-    filePath = os.path.dirname(os.path.abspath(__file__))
-
-    filePath = filePath.replace('\\', '/')
-
-    # Split into parts on \
-    pathParts = filePath.split("/")
-
-    filePath = ""
-    # Add all parts back together
-    for part in pathParts:
-        # Except the last one
-        if part != pathParts[-1]:
-            # Concatenate with / not \ (prevents issues with escape characters)
-            filePath = filePath + part + "/"
-
-    # Controller number part added
-    if number == 0:
-        filePath = filePath + "robot0Controller/robot0Controller.py"
-    elif number == 1:
-        filePath = filePath + "robot1Controller/robot1Controller.py"
-    else:
-        # Returns none if id was not valid
-        filePath = None
-
-    return filePath
-
 
 def resetControllerFile(number: int) -> None:
-    '''Open the controller at the file location and blanks it'''
-    filePath = getPath(number)
+    '''Remove the controller'''
+    path = os.path.dirname(os.path.abspath(__file__))
+    path = os.path.join(path, "robot"+str(number)+"Controller")
+    path = os.path.join(path, "robot"+str(number)+"Controller.*")
 
-    if filePath != None:
-        controllerFile = open(filePath, "w")
-        controllerFile.close()
-
-
-def createController(number: int, fileData: list) -> list:
-    '''Opens the controller at the file location and writes the data to it'''
-    filePath = getPath(number)
-
-    if filePath == None:
-        return None, None
-
-    controllerFile = open(filePath, "w")
-    controllerFile.write(fileData)
-    controllerFile.close()
-
-    # If there is a name in the file
-    if "RobotName:" in fileData:
-        # Find the name
-        name = fileData[fileData.index("RobotName:") + 10:]
-        name = name.split("\n")[0]
-        # Return data with a name
-        return name, number
-
-    # Return data without a name
-    return None, number
-
-
-def assignController(num: int, name: str) -> None:
-    '''Send message to robot window to say that controller has loaded and with what name'''
-    if name == None:
-        name = "None"
-    else:
-        name = name[:-1]
-    if num == 0:
-        supervisor.wwiSendText("loaded0," + name)
-    if num == 1:
-        supervisor.wwiSendText("loaded1," + name)
+    for file in glob.glob(path):
+        os.remove(file)
 
 def resetController(num: int) -> None:
     '''Send message to robot window to say that controller has been unloaded'''
-    if num == 0:
-        resetControllerFile(0)
-        supervisor.wwiSendText("unloaded0")
-    if num == 1:
-        resetControllerFile(1)
-        supervisor.wwiSendText("unloaded1")
+    resetControllerFile(num)
+    supervisor.wwiSendText("unloaded"+str(num))
 
 def updateHistory():
     supervisor.wwiSendText("historyUpdate" + "," + ",".join(robot0Obj.history.queue))
@@ -416,7 +381,7 @@ def getHumans(humans, numberOfHumans):
     for i in range(numberOfHumans):
         # Get each human from children field in the human root node HUMANGROUP
         human = humanNodes.getMFNode(i)
-        
+
         victimType = human.getField('type').getSFString()
         scoreWorth = human.getField('scoreWorth').getSFInt32()
 
@@ -506,22 +471,25 @@ def add_robot():
         # Get relative path
         filePath = os.path.dirname(os.path.abspath(__file__))
         filePath = filePath.replace('\\', '/')
-        
+
         # Get webots root
         root = supervisor.getRoot()
         root_children_field = root.getField('children')
         # Get .wbo file to insert into world
-        root_children_field.importMFNode(12,filePath + '/../../nodes/robot0.wbo')
+        root_children_field.importMFNode(12,filePath + '/../nodes/robot0.wbo')
         # Update robot0 variable
         robot0 = supervisor.getFromDef("ROBOT0")
         # Update robot window to say robot is in simulation
         supervisor.wwiSendText("robotInSimulation0")
 
+        robot0.getField("using_detection_api").setSFBool(robotApiDetection)
+
+
 def create_log_str():
     '''Create log text for log file'''
     # Get robot events
     r0_str = robot0Obj.get_log_str()
-    
+
     # Create log text
     log_str = ""
     log_str += "MAX_GAME_DURATION: "+str(maxTimeMinute)+":00\n"
@@ -530,7 +498,7 @@ def create_log_str():
     log_str += "ROBOT_0: "+str(robot0Obj.name)+"\n"
     log_str += r0_str
     log_str += "\n"
-    
+
     return log_str
 
 def write_log():
@@ -540,12 +508,12 @@ def write_log():
     # Get relative path to logs dir
     filePath = os.path.dirname(os.path.abspath(__file__))
     filePath = filePath.replace('\\', '/')
-    filePath = filePath + "/../../logs/"
-    
+    filePath = filePath + "/../logs/"
+
     # Create file name using date and time
     file_date = datetime.datetime.now()
     logFileName = file_date.strftime("log %m-%d-%y %H,%M,%S")
-    
+
     filePath += logFileName + ".txt"
 
     try:
@@ -555,13 +523,13 @@ def write_log():
         logsFile.close()
     except:
         # If write file fails, most likely due to missing logs dir
-        print("Couldn't write log file, no log directory ./game/logs")
+        print("Couldn't write log file, no log directory " + filePath)
 
 def set_robot_start_pos():
     '''Set robot starting position'''
 
     starting_tile_node = supervisor.getFromDef("START_TILE")
-    
+
 
     # Get the starting tile minimum node and translation
     starting_PointMin = supervisor.getFromDef("start0min")
@@ -584,346 +552,366 @@ def set_robot_start_pos():
     robot0Obj.visitedCheckpoints.append(startingTileObj.center)
 
     robot0Obj.position = [startingTileObj.center[0], startingTileObj.center[1], startingTileObj.center[2]]
+    robot0Obj.set_starting_orientation()
 
 # -------------------------------
 # CODED LOADED BEFORE GAME STARTS
 
-# Empty list to contain checkpoints
-checkpoints = []
-# Empty list to contain swamps
-swamps = []
-# Global empty list to contain human objects
-humans = []
+if __name__ == '__main__':
 
-# Get number of humans in map
-numberOfHumans = supervisor.getFromDef('HUMANGROUP').getField("children").getCount()
+    uploader = threading.Thread(target=ControllerUploader.start)
+    uploader.setDaemon(True)
+    uploader.start()
 
-# Get number of checkpoints in map
-numberOfCheckpoints = supervisor.getFromDef('CHECKPOINTBOUNDS').getField('children').getCount()
+    # Empty list to contain checkpoints
+    checkpoints = []
+    # Empty list to contain swamps
+    swamps = []
+    # Global empty list to contain human objects
+    humans = []
 
-# Get number of swamps in map
-numberOfSwamps = supervisor.getFromDef('SWAMPBOUNDS').getField('children').getCount()
+    # Get number of humans in map
+    numberOfHumans = supervisor.getFromDef('HUMANGROUP').getField("children").getCount()
 
-#get swamps in world
-getSwamps(swamps, numberOfSwamps)
+    # Get number of checkpoints in map
+    numberOfCheckpoints = supervisor.getFromDef('CHECKPOINTBOUNDS').getField('children').getCount()
 
-#get checkpoints in world
-getCheckpoints(checkpoints, numberOfCheckpoints)
+    # Get number of swamps in map
+    numberOfSwamps = supervisor.getFromDef('SWAMPBOUNDS').getField('children').getCount()
 
-#get humans in world
-getHumans(humans, numberOfHumans)
+    #get swamps in world
+    getSwamps(swamps, numberOfSwamps)
 
-# Not currently running the match
-currentlyRunning = False
-previousRunState = False
+    #get checkpoints in world
+    getCheckpoints(checkpoints, numberOfCheckpoints)
 
-# The game has not yet started
-gameStarted = False
+    #get humans in world
+    getHumans(humans, numberOfHumans)
 
-# Get the robot nodes by their DEF names
-robot0 = supervisor.getFromDef("ROBOT0")
+    # Not currently running the match
+    currentlyRunning = False
+    previousRunState = False
 
-# Add robot into world
-add_robot()
+    # The game has not yet started
+    gameStarted = False
 
-# Init both robots as objects to hold their info
-robot0Obj = Robot(robot0)
+    # The simulation is running
+    simulationRunning = True
+    finished = False
 
-# The simulation is running
-simulationRunning = True
-finished = False
+    # Reset the controllers
+    resetControllerFile(0)
 
-# Reset the controllers
-resetControllerFile(0)
+    # How long the game has been running for
+    timeElapsed = 0
+    lastTime = -1
 
-# How long the game has been running for
-timeElapsed = 0
-lastTime = -1
+    # Send message to robot window to perform setup
+    supervisor.wwiSendText("startup")
 
-# Send message to robot window to perform setup
-supervisor.wwiSendText("startup")
+    # For checking the first update with the game running
+    first = True
 
-# For checking the first update with the game running
-first = True
+    receiver = supervisor.getReceiver('receiver')
+    receiver.enable(32)
 
-receiver = supervisor.getReceiver('receiver')
-receiver.enable(32)
+    # Init robot as object to hold their info
+    robot0Obj = Robot()
 
-# Set robots starting position in world
-set_robot_start_pos()
+    lastSentScore = 0
+    lastSentTime = 0
+
+    # -------------------------------
+
+    # Until the match ends (also while paused)
+    while simulationRunning:
+        r0 = False
+        r0s = False
+
+        # The first frame of the game running only
+        if first and currentlyRunning:
+            # Get the robot nodes by their DEF names
+            robot0 = supervisor.getFromDef("ROBOT0")
+            # Add robot into world
+            add_robot()
+            # Init robot as object to hold their info
+            robot0Obj = Robot(robot0)
+            # Set robots starting position in world
+            set_robot_start_pos()
+            robot0Obj.inSimulation = True
 
 
-# -------------------------------
+            # Restart controller code
+            # robot0.restartController()
+            first = False
 
-# Until the match ends (also while paused)
-while simulationRunning:
-
-    r0 = False
-    r0s = False
-
-    # The first frame of the game running only
-    if first and currentlyRunning:
-        # Restart controller code
-        robot0.restartController()
-        first = False
-
-    # Test if the robots are in checkpoints
-    for checkpoint in checkpoints:
         if robot0Obj.inSimulation:
-            # Check position of checkpoint with the robots position
-            if checkpoint.checkPosition(robot0Obj.position):
-                r0 = True
-                # Update the robot's last visited position 
-                robot0Obj.lastVisitedCheckPointPosition = checkpoint.center
+            # Test if the robots are in checkpoints
+            for checkpoint in checkpoints:
+                # Check position of checkpoint with the robots position
+                if checkpoint.checkPosition(robot0Obj.position):
+                    r0 = True
+                    # Update the robot's last visited position
+                    robot0Obj.lastVisitedCheckPointPosition = checkpoint.center
 
-                alreadyVisited = False
+                    alreadyVisited = False
 
-                # Dont update if checkpoint is already visited
-                # TODO could change this to edit webots node to reduce compute time
-                if len(robot0Obj.visitedCheckpoints) > 0:
-                    for visitedCheckpoint in robot0Obj.visitedCheckpoints:
-                        if visitedCheckpoint == checkpoint.center:
-                            alreadyVisited = True
+                    # Dont update if checkpoint is already visited
+                    # TODO could change this to edit webots node to reduce compute time
+                    if len(robot0Obj.visitedCheckpoints) > 0:
+                        for visitedCheckpoint in robot0Obj.visitedCheckpoints:
+                            if visitedCheckpoint == checkpoint.center:
+                                alreadyVisited = True
 
-                # Update robot's points and history
-                if not alreadyVisited:
-                    robot0Obj.visitedCheckpoints.append(checkpoint.center)
-                    robot0Obj.increaseScore(10)
-                    robot0Obj.history.enqueue("Found checkpoint  +10")
+                    # Update robot's points and history
+                    if not alreadyVisited:
+                        robot0Obj.visitedCheckpoints.append(checkpoint.center)
+                        robot0Obj.increaseScore(10)
+                        robot0Obj.history.enqueue("Found checkpoint  +10")
+                        updateHistory()
+
+            # Print when robot0 enters or exits a checkpoint
+            # Not really needed
+
+            if robot0Obj.inCheckpoint != r0:
+                robot0Obj.inCheckpoint = r0
+                if robot0Obj.inCheckpoint:
+                    print("Robot 0 entered a checkpoint")
+                else:
+                    print("Robot 0 exited a checkpoint")
+
+            # Check if the robots are in swamps
+            for swamp in swamps:
+                if swamp.checkPosition(robot0Obj.position):
+                    r0s = True
+
+            # Check if robot is in swamp
+            if robot0Obj.inSwamp != r0s:
+                robot0Obj.inSwamp = r0s
+                if robot0Obj.inSwamp:
+                    # Cap the robot's velocity to 2
+                    robot0Obj.setMaxVelocity(2)
+                    # Update history
+                    robot0Obj.history.enqueue("Entered swamp")
                     updateHistory()
+                else:
+                    # If not in swamp, reset max velocity to default
+                    robot0Obj.setMaxVelocity(DEFAULT_MAX_VELOCITY)
 
-    # Print when robot0 enters or exits a checkpoint
-    # Not really needed
-    if robot0Obj.inSimulation:
-        if robot0Obj.inCheckpoint != r0:
-            robot0Obj.inCheckpoint = r0
-            if robot0Obj.inCheckpoint:
-                print("Robot 0 entered a checkpoint")
-            else:
-                print("Robot 0 exited a checkpoint")
+            # If receiver has got a message
+            if receiver.getQueueLength() > 0:
+                # Get receiver data
+                receivedData = receiver.getData()
+                try:
+                    # Unpack data
+                    tup = struct.unpack('i i c', receivedData)
 
-    # Check if the robots are in swamps
-    for swamp in swamps:
-        if robot0Obj.inSimulation:
-            if swamp.checkPosition(robot0Obj.position):
-                r0s = True
+                    # Get data in format (est. x position, est. z position, est. victim type)
+                    x = tup[0]
+                    z = tup[1]
 
-    # Check if robot is in swamp
-    if robot0Obj.inSimulation:
-        if robot0Obj.inSwamp != r0s:
-            robot0Obj.inSwamp = r0s
-            if robot0Obj.inSwamp:
-                # Cap the robot's velocity to 2
-                robot0Obj.setMaxVelocity(2)
-                # Update history
-                robot0Obj.history.enqueue("Entered swamp")
-                updateHistory()
-            else:
-                # If not in swamp, reset max velocity to default
-                robot0Obj.setMaxVelocity(DEFAULT_MAX_VELOCITY)
-                
-    # If receiver has got a message
-    if receiver.getQueueLength() > 0:
-        # Get receiver data
-        receivedData = receiver.getData()
-        try:
-            # Unpack data
-            tup = struct.unpack('i i c', receivedData)
+                    estimated_victim_position = (x / 100, 0, z / 100)
 
-            # Get data in format (est. x position, est. z position, est. victim type)
-            x = tup[0]
-            z = tup[1]
-
-            estimated_victim_position = (x / 100, 0, z / 100)
-            
-            victimType = tup[2].decode("utf-8")
+                    victimType = tup[2].decode("utf-8")
 
 
-            if robot0Obj.inSimulation:
-                # Store data recieved
-                robot0Obj.message = [estimated_victim_position, victimType]
-        except:
-            print("Incorrect data format sent")
+                    # Store data recieved
+                    robot0Obj.message = [estimated_victim_position, victimType]
+                except:
+                    print("Incorrect data format sent")
 
-        receiver.nextPacket()
+                receiver.nextPacket()
 
-    if robot0Obj.inSimulation:
-        # If data sent to receiver
-        if robot0Obj.message != []:
-            
-            r0_exitmessage = robot0Obj.message[1]
-            
-            # If exit message is correct
-            if r0_exitmessage == 'E':
-
-                robot0Obj.message = []
-                
-                # Check robot position is on starting tile
-                if robot0Obj.startingTile.checkPosition(robot0Obj.position):
-                    
-                    # Update score and history
-                    robot_quit(robot0Obj, 0, False)
-                    updateHistory()
-
-                    robot0Obj.increaseScore(10)
-                    robot0Obj.increaseScore(int(robot0Obj.getScore() * 0.1))
-
-
-    if robot0Obj.inSimulation:
-        # If robot stopped for 3 seconds
-        if robot0Obj.timeStopped() >= 3:
-
-            # If messaged sent
+            # If data sent to receiver
             if robot0Obj.message != []:
-                
-                # Get estimated values
-                r0_est_vic_pos = robot0Obj.message[0]
-                r0_est_vic_type = robot0Obj.message[1]
-                robot0Obj.message = []
 
-                # For each human
-                # TODO optimise
-                for i, h in enumerate(humans):
-                    # If not already identified
-                    if not h.identified:
+                r0_exitmessage = robot0Obj.message[1]
+
+                # If exit message is correct
+                if r0_exitmessage == 'E':
+
+                    robot0Obj.message = []
+
+                    # Check robot position is on starting tile
+                    if robot0Obj.startingTile.checkPosition(robot0Obj.position):
+                        finished = True
+                        supervisor.wwiSendText("ended")
+                        addScore = 10
+                        for i, h in enumerate(humans):
+                            if h.identified:
+                                addScore += int(robot0Obj.getScore() * 0.1)
+                                break
+                        robot0Obj.increaseScore(addScore)
+                        robot0Obj.history.enqueue("Exit bonus +" + str(addScore))
+                        # Update score and history
+                        robot_quit(robot0Obj, 0, False)
+                        updateHistory()
+
+
+            # If robot stopped for 3 seconds
+            if robot0Obj.timeStopped() >= 3:
+
+                # If messaged sent
+                if robot0Obj.message != []:
+
+                    # Get estimated values
+                    r0_est_vic_pos = robot0Obj.message[0]
+                    r0_est_vic_type = robot0Obj.message[1]
+                    robot0Obj.message = []
+
+                    # For each human
+                    # TODO optimise
+
+                    misidentification = True
+                    for i, h in enumerate(humans):
                         # Check if in range
                         if h.checkPosition(robot0Obj.position):
                             # Check if estimated position is in range
                             if h.checkPosition(r0_est_vic_pos):
                                 # If robot on same side
                                 if h.onSameSide(robot0Obj.position):
-                                    
-                                    # Get points scored depending on the type of victim
-                                    pointsScored = h.scoreWorth
+                                    misidentification = False
+                                    # If not already identified
+                                    if not h.identified:
+                                        # Get points scored depending on the type of victim
+                                        #pointsScored = h.scoreWorth
 
-                                    # Update score and history
-                                    if r0_est_vic_type.lower() == h.simple_victim_type.lower():
-                                        robot0Obj.history.enqueue("Successful Victim Type Correct Bonus  + 10")
-                                        pointsScored += 10
+                                        # Update score and history
+                                        if r0_est_vic_type.lower() == h.simple_victim_type.lower():
+                                            robot0Obj.history.enqueue("Successful Victim Type Correct Bonus  +" + str(int(10*pointsMultiplier)))
+                                            robot0Obj.increaseScore(10, pointsMultiplier)
+                                            #pointsScored += 10
 
-                                    robot0Obj.history.enqueue("Successful Victim Identification " + " +" + str(h.scoreWorth))
-                                    robot0Obj.increaseScore(pointsScored)
+                                        robot0Obj.history.enqueue("Successful Victim Identification " + " +" + str(int(h.scoreWorth*pointsMultiplier)))
+                                        robot0Obj.increaseScore(h.scoreWorth, pointsMultiplier)
 
-                                    h.identified = True
-                                    updateHistory()
-                            else:
-                                robot0Obj.history.enqueue("Misidentification of victim  - 5")
-                                robot0Obj.increaseScore(-5)
+                                        h.identified = True
+                                        updateHistory()
 
-                                updateHistory()
+                    if misidentification:
+                        robot0Obj.history.enqueue("Misidentification of victim  - 5")
+                        robot0Obj.increaseScore(-5)
+                        updateHistory()
 
-    if robot0Obj.inSimulation:
-        # Relocate robot if stationary for 20 sec
-        if robot0Obj.timeStopped() >= 20:
-            relocate(robot0Obj)
-            robot0Obj.robot_timeStopped = 0
-            robot0Obj.stopped = False
-            robot0Obj.stoppedTime = None
+            # Relocate robot if stationary for 20 sec
+            if robot0Obj.timeStopped() >= 20:
+                relocate(robot0Obj)
+                robot0Obj.robot_timeStopped = 0
+                robot0Obj.stopped = False
+                robot0Obj.stoppedTime = None
 
-        if robot0Obj.position[1] < -0.035 and currentlyRunning:
-            relocate(robot0Obj)
-            robot0Obj.robot_timeStopped = 0
-            robot0Obj.stopped = False
-            robot0Obj.stoppedTime = None
+            if robot0Obj.position[1] < -0.035 and currentlyRunning:
+                relocate(robot0Obj)
+                robot0Obj.robot_timeStopped = 0
+                robot0Obj.stopped = False
+                robot0Obj.stoppedTime = None
 
-    if currentlyRunning:
-        # Check if robot has not left the starting tile
-        if not robot0Obj.left_exit_tile:
-            # Check robot position is on starting tile
-            if not robot0Obj.startingTile.checkPosition(robot0Obj.position):
-                robot0Obj.left_exit_tile = True
-                robot0Obj.startingTile.wb_node.getField("start").setSFBool(False)
-        
+        if currentlyRunning:
+            # Check if robot has not left the starting tile
+            if not robot0Obj.left_exit_tile:
+                # Check robot position is on starting tile
+                if not robot0Obj.startingTile.checkPosition(robot0Obj.position):
+                    robot0Obj.left_exit_tile = True
+                    robot0Obj.startingTile.wb_node.getField("start").setSFBool(False)
 
-    # If the running state changes
-    if previousRunState != currentlyRunning:
-        # Update the value and #print
-        previousRunState = currentlyRunning
 
-    # Get the message in from the robot window(if there is one)
-    message = supervisor.wwiReceiveText()
-    # If there is a message
-    if message != "":
-        # split into parts
-        parts = message.split(",")
-        # If there are parts
-        if len(parts) > 0:
-            if parts[0] == "run":
-                # Start running the match
-                currentlyRunning = True
-                lastTime = supervisor.getTime()
-                gameStarted = True
-            if parts[0] == "pause":
-                # Pause the match
-                currentlyRunning = False
-            if parts[0] == "reset":
-                # Reset both controller files
-                resetControllerFile(0)
-                resetVictimsTextures()
-                
-                # Reset the simulation
-                supervisor.simulationReset()
-                simulationRunning = False
-                finished = True
-                # Restart this supervisor
-                mainSupervisor.restartController()
+        # If the running state changes
+        if previousRunState != currentlyRunning:
+            # Update the value and #print
+            previousRunState = currentlyRunning
 
-            if parts[0] == "robot0File":
-                # Load the robot controller
-                if not gameStarted:
+        # Get the message in from the robot window(if there is one)
+        message = supervisor.wwiReceiveText()
+        # If there is a message
+        if message != "":
+            # split into parts
+            parts = message.split(",")
+            # If there are parts
+            if len(parts) > 0:
+                if parts[0] == "run":
+                    # Start running the match
+                    currentlyRunning = True
+                    lastTime = supervisor.getTime()
+                    gameStarted = True
+                if parts[0] == "pause":
+                    # Pause the match
+                    currentlyRunning = False
+                if parts[0] == "reset":
+                    robot_quit(robot0Obj, 0, False)
+                    # Reset both controller files
+                    resetControllerFile(0)
+                    resetVictimsTextures()
+
+                    # Reset the simulation
+                    supervisor.simulationReset()
+                    simulationRunning = False
+                    finished = True
+                    # Restart this supervisor
+                    mainSupervisor.restartController()
+
+                    if robot0Obj.startingTile != None:
+                        #Show start tile
+                        robot0Obj.startingTile.wb_node.getField("start").setSFBool(True)
+
+                if parts[0] == "robot0Unload":
+                    # Unload the robot 0 controller
+                    if not gameStarted:
+                        resetController(0)
+
+                if parts[0] == 'relocate':
                     data = message.split(",", 1)
                     if len(data) > 1:
-                        name, id = createController(0, data[1])
-                        if name != None:
-                            robot0Obj.name = name
-                        assignController(id, name)
-                else:
-                    print("Please choose controllers before simulation starts.")
+                        if int(data[1]) == 0:
+                            relocate(robot0Obj)
 
-            if parts[0] == "robot0Unload":
-                # Unload the robot 0 controller
-                if not gameStarted:
-                    resetController(0)
+                if parts[0] == 'quit':
+                    data = message.split(",", 1)
+                    if len(data) > 1:
+                        if int(data[1]) == 0:
+                            if gameStarted:
+                                robot_quit(robot0Obj, 0, True)
+                        updateHistory()
 
-            if parts[0] == 'relocate':
-                data = message.split(",", 1)
-                if len(data) > 1:
-                    if int(data[1]) == 0:
-                        relocate(robot0Obj)
+                if parts[0] == 'detectionApi':
+                    data = message.split(",", 1)
+                    if len(data) > 1:
+                        if int(data[1]) == 0:
+                            robotApiDetection = False
+                            pointsMultiplier = 1
+                        elif int(data[1]) == 1:
+                            robotApiDetection = True
+                            pointsMultiplier = 0.3
 
-            if parts[0] == 'quit':
-                data = message.split(",", 1)
-                if len(data) > 1:
-                    if int(data[1]) == 0:
-                        if gameStarted:
-                            robot_quit(robot0Obj, 0, True)
-                    updateHistory()
+        # Send the update information to the robot window
+        nowScore = robot0Obj.getScore()
+        if lastSentScore != nowScore or lastSentTime != timeElapsed:
+            supervisor.wwiSendText("update," + str(nowScore) + "," + str(timeElapsed))
+            lastSentScore = nowScore
+            lastSentTime = timeElapsed
 
-    # Send the update information to the robot window
-    supervisor.wwiSendText("update," + str(robot0Obj.getScore()) + "," + str(timeElapsed))
-
-    # If the time is up
-    if timeElapsed >= maxTime:
-        finished = True
-        supervisor.wwiSendText("ended")
-
-    # If the match is running
-    if currentlyRunning and not finished:
-        # Get the time since the last frame
-        frameTime = supervisor.getTime() - lastTime
-        # Add to the elapsed time
-        timeElapsed = timeElapsed + frameTime
-        # Get the current time
-        lastTime = supervisor.getTime()
-        # Step the simulation on
-        step = supervisor.step(32)
-        # If the simulation is terminated or the time is up
-        if step == -1:
-            # Stop simulating
-            simulationRunning = False
+        # If the time is up
+        if timeElapsed >= maxTime:
             finished = True
-            
-    if not simulationRunning and timeElapsed > 0:
-        #write log for game if the game ran for more than 0 seconds
-        write_log()
-        
+            supervisor.wwiSendText("ended")
+
+        # If the match is running
+        if currentlyRunning and not finished:
+            # Get the time since the last frame
+            frameTime = supervisor.getTime() - lastTime
+            # Add to the elapsed time
+            timeElapsed = timeElapsed + frameTime
+            # Get the current time
+            lastTime = supervisor.getTime()
+            # Step the simulation on
+            step = supervisor.step(32)
+            # If the simulation is terminated or the time is up
+            if step == -1:
+                # Stop simulating
+                simulationRunning = False
+                finished = True
+        elif first:
+            supervisor.step(32)
+
+        if not simulationRunning and timeElapsed > 0:
+            #write log for game if the game ran for more than 0 seconds
+            write_log()
