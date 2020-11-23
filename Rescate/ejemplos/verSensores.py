@@ -29,9 +29,14 @@ leftSensors[0].enable(timeStep)
 leftSensors.append(robot.getDistanceSensor("ps5"))
 leftSensors[1].enable(timeStep)
 
-camera = robot.getCamera("camera")
-camera.enable(timeStep)
-camera.recognitionEnable(timeStep)
+camaraI=robot.getCamera("camera_left")
+camaraI.enable(timeStep)
+
+camaraC=robot.getCamera("camera_centre")
+camaraC.enable(timeStep)
+
+camaraD=robot.getCamera("camera_right")
+camaraD.enable(timeStep)
 
 colour_camera = robot.getCamera("colour_sensor")
 colour_camera.enable(timeStep)
@@ -42,11 +47,9 @@ gps = robot.getGPS("gps")
 gps.enable(timeStep)
 
 while robot.step(timeStep) != -1:
-
     wheel_left.setVelocity(0)
     wheel_right.setVelocity(0)
     #print(frontSensors[0].getValue())
-    color=colour_camera.getImage()
-    print("casa2")
+    elcolor=colour_camera.getImage()
+    print(elcolor)
     #print(gps.getValues())
-   

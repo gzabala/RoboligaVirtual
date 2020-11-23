@@ -1,10 +1,9 @@
-
 from controller import Robot
 import math
 import struct
 
-trap_colour = b'\n\n\n\xff'
-swamp_colour = b'\x12\x1b \xff'
+trap_colour = b'oo\x8b\xff'
+swamp_colour = b'\x8e\xde\xf5\xff'
 
 timeStep = 32
 max_velocity = 6.28
@@ -19,9 +18,14 @@ robot = Robot()
 wheel_left = robot.getMotor("left wheel motor")
 wheel_right = robot.getMotor("right wheel motor")
 
-camera = robot.getCamera("camera")
-camera.enable(timeStep)
-camera.recognitionEnable(timeStep)
+camaraI=robot.getCamera("camera_left")
+camaraI.enable(timeStep)
+
+camaraC=robot.getCamera("camera_centre")
+camaraC.enable(timeStep)
+
+camaraD=robot.getCamera("camera_right")
+camaraD.enable(timeStep)
 
 colour_camera = robot.getCamera("colour_sensor")
 colour_camera.enable(timeStep)
@@ -63,7 +67,7 @@ def sendMessage():
     if not messageSent:
         #robot type, posicion en cm, posicion en cm, tipo de victima (esto hay que perfeccionarlo luego)
         #struct.pack codifica en binario un mensaje
-        message = struct.pack('i i i c', 0, int(position[0] * 100), int(position[2] * 100), b'H')
+        message = struct.pack('i i  c',  int(position[0] * 100), int(position[2] * 100), b'H')
         emitter.send(message)
         messageSent = True
 
@@ -71,37 +75,6 @@ def sendMessage():
 def nearObject(position):
     return math.sqrt((position[0] ** 2) + (position[2] ** 2)) < 0.10
 
-def getVisibleVictims():
-    #captura todos los objetos que la camara puede ver
-    objects = camera.getRecognitionObjects()
-
-    victims = []
-
-    for item in objects:
-        if item.get_colors() == [1,1,1]:
-            victim_pos = item.get_position() 
-            victims.append(victim_pos)
-
-    return victims
-
-def stopAtVictim():
-    global messageSent #envio de mensajes. Con global le digo que estoy usando la variable declarada afuera y no una local
-
-    #tomo posicion de posibles victimas (porque son blancas)    
-    victims = getVisibleVictims()
-
-    foundVictim = False
-
-    #si estamos cerca de una victima, paramos y enviamos mensaje al supervisor
-    for victim in victims:
-        if nearObject(victim):
-            stop()
-            sendMessage()
-            foundVictim = True
-
-    #si mande un mensaje, no mando de nuevo hasta que no pierda de vista esta
-    if not foundVictim:
-        messageSent = False
 
 def avoidTiles():
     global duration, startTime
@@ -147,17 +120,15 @@ while robot.step(timeStep) != -1:
 
         for i in range(2):
             #si algun sensor de la izquierda da positivo
-            if leftSensors[i].getValue() > 80:
+            if leftSensors[i].getValue() <0.05:
                 turn_right()
              #si alguno de la derecha da positivo
-            elif rightSensors[i].getValue() > 80:
+            elif rightSensors[i].getValue() <0.05:
                 turn_left()
         
        #si los dos sensores de frente dan positivo
-        if frontSensors[0].getValue() > 80 and frontSensors[1].getValue() > 80:
+        if frontSensors[0].getValue() <0.05 and frontSensors[1].getValue() <0.05:
             spin()
 
-        stopAtVictim()
-
-        #avoidTiles()
+        avoidTiles()
 

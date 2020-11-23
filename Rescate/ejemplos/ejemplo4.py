@@ -2,9 +2,8 @@ from controller import Robot
 import math
 import struct
 
-trap_colour = b'\n\n\n\xff'
-swamp_colour = b'\x12\x1b \xff'
-exit_colour = b'\x10\xb8\x10\xff'
+trap_colour = b'oo\x8b\xff'
+swamp_colour = b'\x8e\xde\xf5\xff'
 
 timeStep = 32
 max_velocity = 6.28
@@ -19,9 +18,15 @@ robot = Robot()
 wheel_left = robot.getMotor("left wheel motor")
 wheel_right = robot.getMotor("right wheel motor")
 
-camera = robot.getCamera("camera")
-camera.enable(timeStep)
-camera.recognitionEnable(timeStep)
+camaraI=robot.getCamera("camera_left")
+camaraI.enable(timeStep)
+
+camaraC=robot.getCamera("camera_centre")
+camaraC.enable(timeStep)
+
+camaraD=robot.getCamera("camera_right")
+camaraD.enable(timeStep)
+
 
 colour_camera = robot.getCamera("colour_sensor")
 colour_camera.enable(timeStep)
@@ -63,8 +68,8 @@ wheel_right.setPosition(float("inf"))
 
 program_start = robot.getTime()
 
-def sendMessage(robot_type, v1, v2, carac):
-    message = struct.pack('i i i c', robot_type, v1, v2, carac)
+def sendMessage(v1, v2, carac):
+    message = struct.pack('i i c', v1, v2, carac)
     emitter.send(message)
 
 def sendVictimMessage():
@@ -73,7 +78,7 @@ def sendVictimMessage():
     position = gps.getValues()
 
     if not messageSent:
-        sendMessage(0, int(position[0] * 100), int(position[2] * 100), b'H')
+        sendMessage(int(position[0] * 100), int(position[2] * 100), b'H')
         messageSent = True
 
 def getObjectDistance(position):
@@ -83,84 +88,18 @@ def getObjectDistance(position):
 def nearObject(position):
     return getObjectDistance(position)  < 0.10
 
-def getVisibleVictims():
-    #get all objects the camera can see
-    objects = camera.getRecognitionObjects()
-
-    victims = []
-    #para poder alinear no guardo solo la posicion de la victima, sino mi alenacion con la imagen
-    for item in objects:
-        if item.get_colors() == [1,1,1]:
-            print("Encontre alguna victima blanca")
-            #distancia con respecto a la camara
-            victim_pos = item.get_position()
-            #donde quedo la victima en la imagen (la tengo torcida, derecha?)
-            victim_image_pos = item.get_position_on_image()
-
-            victims.append([victim_pos,victim_image_pos])
-
-    return victims
-
 def stopAtHeatedVictim():
-    global messageSent
+    global messageSent, startTime, duration
     
     if left_heat_sensor.getValue() > 32 or right_heat_sensor.getValue() > 32:
-        print("Encontre una victima con temperatura")
+        print('Encontre una victima con temperatura')
         stop()
         sendVictimMessage()
+        startTime = robot.getTime()
+        duration = 3.1        
     else:
         messageSent = False
 
-def turnToVictim(victim):
-    # [x,y]
-    print("Trato de quedar de frente a la victima")
-    position_on_image = victim[1]
-
-    width = camera.getWidth()
-    center = width / 2
-
-    victim_x_position = position_on_image[0]
-    dx = center - victim_x_position
-
-    if dx < 0:
-        turn_right_to_victim()
-    else:
-        turn_left_to_victim()
-
-
-def getClosestVictim(victims):
-    shortestDistance = 999
-    closestVictim = []
-
-    #recorro las victimas para elegir la mas cercana
-    for victim in victims:
-        dist = getObjectDistance(victim[0])
-        if dist < shortestDistance:
-            shortestDistance = dist
-            closestVictim = victim
-
-    return closestVictim
-
-def stopAtVictim():
-    global messageSent
-    victims = getVisibleVictims()
-
-    foundVictim = False
-
-    #si tengo alguna victima apunto a la mas cercana
-    if len(victims) != 0:
-        closest_victim = getClosestVictim(victims)
-        turnToVictim(closest_victim)
-
-    for victim in victims:
-        if nearObject(victim[0]):
-            print("Encontre una victima y estoy cerca")
-            stop()
-            sendVictimMessage()
-            foundVictim = True
-
-    if not foundVictim:
-        messageSent = False
 
 def avoidTiles():
     global duration, startTime
@@ -209,23 +148,18 @@ while robot.step(timeStep) != -1:
         setVel(1,1)
 
         for i in range(2):
-            if leftSensors[i].getValue() > 80:
+            if leftSensors[i].getValue() < 0.05:
                 turn_right()
-            elif rightSensors[i].getValue() > 80:
+            elif rightSensors[i].getValue() < 0.05:
                 turn_left()
         
-        if frontSensors[0].getValue() > 80 and frontSensors[1].getValue() > 80:
+        if frontSensors[0].getValue() < 0.05 and frontSensors[1].getValue() < 0.05:
             spin()
 
-        stopAtVictim()
         #Analiza si tengo victimas por temperatura
         stopAtHeatedVictim()
 
         avoidTiles()
 
-        #Si paso un rato y llegue a verde entonces aviso que sali. Puedo salir en cualquier momento, mmmm
-        if (robot.getTime() - program_start) > 20:
-            if colour_camera.getImage() == exit_colour:
-                sendMessage(0,0,0,b'E')
 
     
