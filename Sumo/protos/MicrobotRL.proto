@@ -4,19 +4,19 @@
 # documentation url: https://www.cyberbotics.com/doc/guide/microbot
 # Basado en BOT120 PICAXE-20X2 Microbot (Revolution Education Ltd.)
 # This small robot is used for education with PICAXE programming tools
-# Modified by Ricardo Moran and Gonzalo Zabala (CAETI - UAI) 
+# Modified by Ricardo Moran and Gonzalo Zabala (CAETI - UAI)
 
 PROTO MicrobotRL [
   field SFVec3f    translation      0 0.0409483 0.685 # Is `Transform.translation`.
   field SFRotation rotation         0 1 0 0   # Is `Transform.rotation`.
   field SFString   name            "J1"   # Is `Solid.name`.
   field SFString   controller      ""     # Is `Robot.controller`.
-  field SFString   controllerArgs  ""         # Is `Robot.controllerArgs`.
+  field MFString   controllerArgs  ""         # Is `Robot.controllerArgs`.
   field SFString   customData      ""         # Is `Robot.customData`.
   field SFBool     supervisor      FALSE      # Is `Robot.supervisor`.
   field SFBool     synchronization TRUE       # Is `Robot.synchronization`.
   field MFNode     extensionSlot   []         # Extends the robot with new nodes in the extension slot.
-  field SFFloat    max_velocity    30         
+  field SFFloat    max_velocity    30
 ]
 {
   Robot {
@@ -27,7 +27,7 @@ PROTO MicrobotRL [
     customData IS customData
     supervisor IS supervisor
     synchronization IS synchronization
-	
+
     children [
 	  Group {
         children IS extensionSlot
@@ -52,13 +52,13 @@ PROTO MicrobotRL [
         0 0 0
         1 100 0
       ]
-	  
+
 	  physics Physics {
 		density -1
 		mass 0.05
 	  }
 
-	  
+
     }
 	DistanceSensor {
 	  translation 0.02 0.007 -0.039984
@@ -84,7 +84,7 @@ PROTO MicrobotRL [
 		mass 0.05
 	  }
 
-	  
+
 	}
       TouchSensor {
         name "boton"
@@ -122,7 +122,7 @@ PROTO MicrobotRL [
 		  width 1
 		  height 1
 	}
-	
+
 
       TouchSensor {
         name "bumperIzquierdo"
