@@ -1,5 +1,5 @@
 """Roboliga Robot class v1
-   Written by Ricardo Moran and Gonzalo Zabala (CAETI - UAI) 
+   Written by Ricardo Moran and Gonzalo Zabala (CAETI - UAI)
 """
 
 from controller import Robot
@@ -15,22 +15,22 @@ class RobotRL:
         #propiedades de objeto
         self.__robot = Robot()
 
-        self.__ruedaIzquierda = self.__robot.getMotor("motorIzquierdo")
-        self.__ruedaDerecha = self.__robot.getMotor("motorDerecho")
+        self.__ruedaIzquierda = self.__robot.getDevice("motorIzquierdo")
+        self.__ruedaDerecha = self.__robot.getDevice("motorDerecho")
 
-        self.__camaraPiso=self.__robot.getCamera("colorPiso")
+        self.__camaraPiso=self.__robot.getDevice("colorPiso")
         self.__camaraPiso.enable(self.__timeStep)
 
-        self.__senDistI=self.__robot.getDistanceSensor("sensorDistanciaI")
+        self.__senDistI=self.__robot.getDevice("sensorDistanciaI")
         self.__senDistI.enable(self.__timeStep)
 
-        self.__senDistD=self.__robot.getDistanceSensor("sensorDistanciaD")
+        self.__senDistD=self.__robot.getDevice("sensorDistanciaD")
         self.__senDistD.enable(self.__timeStep)
 
-        self.__bumperI=self.__robot.getTouchSensor("bumperIzquierdo")
+        self.__bumperI=self.__robot.getDevice("bumperIzquierdo")
         self.__bumperI.enable(self.__timeStep)
 
-        self.__bumperD=self.__robot.getTouchSensor("bumperDerecho")
+        self.__bumperD=self.__robot.getDevice("bumperDerecho")
         self.__bumperD.enable(self.__timeStep)
 
         self.__ruedaIzquierda.setPosition(float("inf"))
