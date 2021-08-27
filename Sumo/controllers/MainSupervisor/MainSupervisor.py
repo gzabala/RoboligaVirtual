@@ -4,12 +4,11 @@
 
 from controller import Supervisor
 import os
-import random
 import struct
 import math
 import datetime
 
-from utils import TIME_RELOC, TIME_OUT
+from utils import *
 from Robot import Robot
 
 timeElapsed = 0
@@ -27,103 +26,9 @@ maxTime = 2.5 * 60
 
 DEFAULT_MAX_VELOCITY = 30
 
-def getPath(number: int) -> str:
-    '''Get the path to the correct controller'''
-    # The current path to this python file
-    filePath = os.path.dirname(os.path.abspath(__file__))
-
-    filePath = filePath.replace('\\', '/')
-
-    # Split into parts on \
-    pathParts = filePath.split("/")
-
-    filePath = ""
-    # Add all parts back together
-    for part in pathParts:
-        # Except the last one
-        if part != pathParts[-1]:
-            # Concatenate with / not \ (prevents issues with escape characters)
-            filePath = filePath + part + "/"
-
-    # Controller number part added
-    if number == 0:
-        filePath = filePath + "robot0Controller/robot0Controller.py"
-    elif number == 1:
-        filePath = filePath + "robot1Controller/robot1Controller.py"
-    else:
-        # Returns none if id was not valid
-        filePath = None
-
-    return filePath
-
-
-def resetControllerFile(number: int) -> None:
-    '''Open the controller at the file location and blanks it'''
-    filePath = getPath(number)
-
-    if filePath != None:
-        controllerFile = open(filePath, "w")
-        controllerFile.close()
-
-
-def createController(number: int, fileData: list) -> list:
-    '''Opens the controller at the file location and writes the data to it'''
-    try:
-        filePath = getPath(number)
-
-        if filePath == None:
-            return None, None
-
-        controllerFile = open(filePath, "w")
-        controllerFile.write(fileData)
-        controllerFile.close()
-
-        # If there is a name in the file
-        if "RobotName:" in fileData:
-            # Find the name
-            name = fileData[fileData.index("RobotName:") + 10:]
-            name = name.split("\n")[0]
-            # Return data with a name
-            return name, number
-
-        supervisor.wwiSendText("alert,ERROR: El robot no tiene nombre")
-        # Return data without a name
-        return None, None
-    except Exception as ex:
-        supervisor.wwiSendText("alert,ERROR: El archivo no es un controlador válido")
-        return None, None
-
-
-def assignController(num: int, name: str) -> None:
-    '''Send message to robot window to say that controller has loaded and with what name'''
-
-    if name == None:
-        name = "None"
-
-    name = name.strip()
-
-    if num == 0:
-        supervisor.wwiSendText("loaded0," + name)
-
-    if num == 1:
-        supervisor.wwiSendText("loaded1," + name)
-
-
-def resetController(num: int) -> None:
-    '''Send message to robot window to say that controller has been unloaded'''
-    if num == 0:
-        resetControllerFile(0)
-        supervisor.wwiSendText("unloaded0")
-    if num == 1:
-        resetControllerFile(1)
-        supervisor.wwiSendText("unloaded1")
-
-
 def updateHistory():
     supervisor.wwiSendText(
         "historyUpdate" + "," + ",".join(robots[0].history.queue))
-
-
 
 def relocate(num):
     #num indica el nro de vez que lo relocaliza
@@ -171,19 +76,6 @@ def write_log(r0, r1, winner, reason, time):
         # If write file fails, most likely due to missing logs dir
         print("Couldn't write log file, no log directory ./game/logs")
 
-def randomize(value, max):
-    return value + (random.random() * 2 - 1) * max
-
-def randomizeRotation(vector):
-    return [vector[0], vector[1], vector[2], randomize(vector[3], 0.1)]
-
-def randomizePosition(vector):
-    max_pos = 0.015
-    return [randomize(vector[0], max_pos),
-            vector[1],
-            randomize(vector[2], max_pos)]
-
-
 # Not currently running the match
 currentlyRunning = False
 previousRunState = False
@@ -194,16 +86,15 @@ gameStarted = False
 # Get the robot nodes by their DEF names
 robots = [None, None]
 robots[0] = Robot(0, supervisor, "Rojo")
-robots[1] = Robot(0, supervisor, "Verde")
-
+robots[1] = Robot(1, supervisor, "Verde")
 
 # The simulation is running
 simulationRunning = True
 finished = False
 
 # Reset the controllers
-resetControllerFile(0)
-resetControllerFile(1)
+robots[0].clearController()
+robots[1].clearController()
 
 
 # Send message to robot window to perform setup
@@ -309,8 +200,8 @@ while simulationRunning:
             if parts[0] == "reset":
                 #print("Reset message Received")
                 # Reset both controller files
-                resetControllerFile(0)
-                resetControllerFile(1)
+                robots[0].clearController()
+                robots[1].clearController()
 
                 # Reset the simulation
                 supervisor.simulationReset()
@@ -324,10 +215,7 @@ while simulationRunning:
                 if not gameStarted:
                     data = message.split(",", 1)
                     if len(data) > 1:
-                        name, id = createController(0, data[1])
-                        if name is not None:
-                            robots[0]._name=name
-                            assignController(id, name)
+                        robots[0].loadController(data[1])
                 else:
                     print("Please choose controllers before simulation starts.")
             if parts[0] == "robot1File":
@@ -335,20 +223,17 @@ while simulationRunning:
                 if not gameStarted:
                     data = message.split(",", 1)
                     if len(data) > 1:
-                        name, id = createController(1, data[1])
-                        if name is not None:
-                            robots[1]._name=name
-                            assignController(id, name)
+                        robots[1].loadController(data[1])
                 else:
                     print("Please choose controllers before simulation starts.")
             if parts[0] == "robot0Unload":
                 # Unload the robot 0 controller
                 if not gameStarted:
-                    resetController(0)
+                    robots[0].resetController()
             if parts[0] == "robot1Unload":
                 # Unload the robot 1 controller
                 if not gameStarted:
-                    resetController(1)
+                    robots[1].resetController()
             if parts[0] == 'relocate':
                 data = message.split(",", 1)
                 if len(data) > 1:
