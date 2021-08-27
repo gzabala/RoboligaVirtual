@@ -1,6 +1,6 @@
 #VRML_SIM R2020a utf8
 #Roboliga Sumo World
-#   Created by Ricardo Moran and Gonzalo Zabala (CAETI - UAI) 
+#   Created by Ricardo Moran and Gonzalo Zabala (CAETI - UAI)
 #
 WorldInfo {
   basicTimeStep 16
@@ -43,7 +43,7 @@ DEF base Solid {
   translationStep 0
   rotationStep 0
 }
-DEF Rojo MicrobotRL {
+DEF Rojo rojo {
   translation -0.2 0.0217 0
   name "Rojo"
   controller "robot0Controller"
@@ -69,7 +69,7 @@ DEF Rojo MicrobotRL {
     }
   ]
 }
-DEF Verde MicrobotRL {
+DEF Verde verde {
   translation 0.2 0.0217 0
   name "Verde"
   controller "robot1Controller"
