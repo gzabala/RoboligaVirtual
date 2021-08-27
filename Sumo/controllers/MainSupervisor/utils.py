@@ -1,0 +1,5 @@
+
+# Settings
+TIME_RELOC=15
+TIME_OUT=20
+LOSS_DIST=0.76
