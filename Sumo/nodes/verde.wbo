@@ -1,0 +1,27 @@
+#VRML_OBJ R2021a utf8
+DEF Verde verde {
+  translation 0.2 0.0217 0
+  name "Verde"
+  controller "robot1Controller"
+  extensionSlot [
+    DEF equipo Solid {
+      translation 0 0.024 0
+      children [
+        DEF placa Shape {
+          appearance PBRAppearance {
+            baseColor 0 1 0
+            metalness 0
+          }
+          geometry Cylinder {
+            height 0.003
+            radius 0.03
+          }
+          isPickable FALSE
+        }
+      ]
+      boundingObject USE placa
+      physics Physics {
+      }
+    }
+  ]
+}
