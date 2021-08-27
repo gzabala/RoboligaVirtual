@@ -1,7 +1,7 @@
 import os
 import math
 
-from utils import LOSS_DIST
+from utils import *
 
 class Queue:
     def __init__(self):
@@ -37,10 +37,9 @@ class Robot:
         self.id = id
         self.supervisor = supervisor
         self.node_name = node_name
-        self.wb_node = supervisor.getFromDef(node_name)
+        self.wb_node = None
 
-        self.wb_translationField = self.wb_node.getField('translation')
-        self.wb_rotationField = self.wb_node.getField('rotation')
+        self.inSimulation = False
 
         self.history = RobotHistory()
 
@@ -50,9 +49,19 @@ class Robot:
 
         self.message = []
 
-        self.inSimulation = True
-
         self._name=""
+
+    def addRobot(self):
+        self.inSimulation = True
+        self.wb_node = self.supervisor.getFromDef(self.node_name)
+        self.wb_translationField = self.wb_node.getField('translation')
+        self.wb_rotationField = self.wb_node.getField('rotation')
+
+        if self.node_name == "Rojo":
+            self.position = randomizePosition([-0.2, 0.0217, 0])
+        else:
+            self.position = randomizePosition([0.2, 0.0217, 0])
+        self.rotation = randomizeRotation([0, 1, 0, 0])
 
     @property
     def position(self) -> list:
@@ -74,6 +83,8 @@ class Robot:
         self.wb_node.getField('max_velocity').setSFFloat(vel)
 
     def _isStopped(self) -> bool:
+        if self.wb_node is None:
+            return True
         vel = self.wb_node.getVelocity()
         robotStopped = abs(vel[0]) < 0.01 and abs(vel[1]) < 0.01 and abs(vel[2]) < 0.01
         return robotStopped
@@ -104,13 +115,14 @@ class Robot:
         return(math.sqrt(self.position[0]*self.position[0]+self.position[2]*self.position[2])>LOSS_DIST)
 
     def crashed(self):
+        if self.wb_node is None:
+            return False
         vel = self.wb_node.getVelocity()
         posy=self.position[1]
         return(vel[1]>0.8 or posy>0.12)
 
     def restartController(self):
         self.wb_node.restartController()
-
 
     def resetPhysics(self):
         self.wb_node.resetPhysics()

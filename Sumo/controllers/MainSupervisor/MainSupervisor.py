@@ -1,7 +1,6 @@
 """Roboliga Supervisor Controller v1
    Written by Ricardo Moran and Gonzalo Zabala (CAETI - UAI) based on the work of Robbie Goldman and Alfred Roberts
 """
-
 from controller import Supervisor
 import os
 import struct
@@ -25,6 +24,10 @@ mainSupervisor = supervisor.getFromDef("MAINSUPERVISOR")
 maxTime = 2.5 * 60
 
 DEFAULT_MAX_VELOCITY = 30
+
+def log(msg):
+    with open("log.txt", "a") as file:
+        file.write(str(msg) + "\n")
 
 def updateHistory():
     supervisor.wwiSendText(
@@ -87,6 +90,8 @@ gameStarted = False
 robots = [None, None]
 robots[0] = Robot(0, supervisor, "Rojo")
 robots[1] = Robot(1, supervisor, "Verde")
+robots[0].addRobot()
+robots[1].addRobot()
 
 # The simulation is running
 simulationRunning = True
@@ -96,18 +101,12 @@ finished = False
 robots[0].clearController()
 robots[1].clearController()
 
-
+log(1)
 # Send message to robot window to perform setup
 supervisor.wwiSendText("startup")
-
+log(2)
 # For checking the first update with the game running
 first = True
-
-robots[0].position = randomizePosition([-0.2, 0.0217, 0])
-robots[0].rotation = randomizeRotation([0, 1, 0, 0])
-robots[1].position = randomizePosition([0.2, 0.0217, 0])
-robots[1].rotation = randomizeRotation([0, 1, 0, 0])
-
 
 # Until the match ends (also while paused)
 while simulationRunning:
@@ -183,8 +182,10 @@ while simulationRunning:
 
     # Get the message in from the robot window(if there is one)
     message = supervisor.wwiReceiveText()
+
     # If there is a message
     if message != "":
+        log(message)
         # split into parts
         parts = message.split(",")
         # If there are parts
@@ -241,8 +242,7 @@ while simulationRunning:
                 pass
 
     # Send the update information to the robot window
-    supervisor.wwiSendText(
-        "update," + str(timeElapsed)+","+str(r0ts)+","+str(r1ts))
+    supervisor.wwiSendText("update," + str(timeElapsed)+","+str(r0ts)+","+str(r1ts))
 
     # If the time is up
     if timeElapsed >= maxTime:

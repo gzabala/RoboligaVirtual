@@ -3,9 +3,9 @@ MainSupervisorWindow.js v2
 
 Changelog:
  - Added human loaded indicator
- 
 
-Modified by Ricardo Moran and Gonzalo Zabala (CAETI - UAI) 
+
+Modified by Ricardo Moran and Gonzalo Zabala (CAETI - UAI)
 
 */
 
@@ -267,14 +267,16 @@ function setEnableButton(name, state){
 
 //Set the onload command for the window
 window.onload = function(){
-	//Connect the window
-	window.robotWindow = webots.window();
-	//Set the title
-	window.robotWindow.setTitle('Control de la Simulación');
-	//Set which function handles the recieved messages
-	window.robotWindow.receive = receive;
-	//Set timer to inital time value
-	document.getElementById("timer").innerHTML = calculateTimeRemaining(0);
+	if (window.webots) {
+		//Connect the window
+		window.robotWindow = webots.window();
+		//Set the title
+		window.robotWindow.setTitle('Control de la Simulación');
+		//Set which function handles the recieved messages
+		window.robotWindow.receive = receive;
+		//Set timer to inital time value
+		document.getElementById("timer").innerHTML = calculateTimeRemaining(0);
+	}
 };
 
 function endGame(){
