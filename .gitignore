@@ -11,3 +11,7 @@ Sumo/ejemplos/adiosmundo.py
 Sumo/ejemplos/holamundo.py
 Sumo/ejemplos/prueba.py
 Sumo/equipos
+
+__pycache__/
+*.py[cod]
+*$py.class
