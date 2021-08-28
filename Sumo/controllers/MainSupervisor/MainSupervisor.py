@@ -224,14 +224,6 @@ while simulationRunning:
                     robots[1].loadRobot(fileName)
                 else:
                     print("Please choose controllers before simulation starts.")
-            if parts[0] == "robot0Unload":
-                # Unload the robot 0 controller
-                if not gameStarted:
-                    robots[0].resetController()
-            if parts[0] == "robot1Unload":
-                # Unload the robot 1 controller
-                if not gameStarted:
-                    robots[1].resetController()
             if parts[0] == 'relocate':
                 data = message.split(",", 1)
                 if len(data) > 1:

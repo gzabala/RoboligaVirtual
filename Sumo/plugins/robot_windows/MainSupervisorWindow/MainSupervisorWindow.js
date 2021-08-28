@@ -44,14 +44,6 @@ function receive (message){
 				//Robot 1's controller has been loaded
 				loadedController(1, parts[1]);
 				break;
-			case "unloaded0":
-				//Robot 0's controller has been unloaded
-				unloadedController(0);
-				break;
-			case "unloaded1":
-				//Robot 1's controller has been unloaded
-				unloadedController(1);
-				break;
 			case "lostJ1":
 				lostJ1();
 				break;
@@ -121,34 +113,12 @@ function loadedController(id, name){
 		document.getElementById("robot0Name").innerText = name;
 		robot0Name = name;
 		document.getElementById("load0").style.display = "none";
-		document.getElementById("unload0").style.display = "inline-block";
 	}
 	if (id == 1){
 		//Set name and toggle to unload button for robot 1
 		document.getElementById("robot1Name").innerText = name;
 		robot1Name = name;
 		document.getElementById("load1").style.display = "none";
-		document.getElementById("unload1").style.display = "inline-block";
-	}
-}
-
-function unloadedController(id){
-	//A controller has been unloaded for robot of the given id
-	if (id == 0){
-		//Reset name and toggle to load button for robot 0
-		document.getElementById("robot0File").value = "";
-		document.getElementById("robot0Name").innerText = "None";
-		robot0Name = "Robot Rojo";
-		document.getElementById("unload0").style.display = "none";
-		document.getElementById("load0").style.display = "inline-block";
-	}
-	if (id == 1){
-		//Reset name and toggle to load button for robot 1
-		document.getElementById("robot1File").value = "";
-		document.getElementById("robot1Name").innerText = "None";
-		robot1Name = "Robot Verde";
-		document.getElementById("unload1").style.display = "none";
-		document.getElementById("load1").style.display = "inline-block";
 	}
 }
 
@@ -232,8 +202,6 @@ function runPressed(){
 	//Disable all the loading buttons (cannot change loaded controllers once simulation starts)
 	setEnableButton("load0", false);
 	setEnableButton("load1", false);
-	setEnableButton("unload0", false);
-	setEnableButton("unload1", false);
 }
 
 function pausePressed(){
@@ -284,55 +252,6 @@ function endGame(){
 
 	if (!visable){
 		show_winning_screen()
-	}
-}
-
-function unloadPressed(id){
-	//Unload button pressed
-	//Send the signal for an unload for the correct robot
-	window.robotWindow.send("robot"+id+"Unload");
-}
-
-
-function fileOpened(id){
-	//When file 0 value is changed
-	//Get the files
-	var files = document.getElementById("robot"+id+"File").files;
-
-	//If there are files
-	if (files.length > 0){
-		//Get the first file only
-		var file = files[0];
-		//Split at the .
-		var nameParts = file.name.split(".");
-
-		//If there are parts to the name
-		if (nameParts.length > 1){
-			//If the last part is "py" - a python file
-			if(nameParts[nameParts.length - 1] == "py"){
-				//Create a file reader
-				var reader = new FileReader();
-
-				//Set the function of the reader when it finishes loading
-				reader.onload = (function(reader){
-					return function(){
-						//Send the signal to the supervisor with the data from the file
-						window.robotWindow.send("robot"+id+"File," + reader.result);
-
-					}
-				})(reader);
-
-				//Read the file as udf-8 text
-				reader.readAsText(file);
-			}else{
-				//Tell the user to select a python file
-				alert("Please select a python file.");
-			}
-		}else{
-			//Tell the user to select a python file
-			alert("Please select a python file.");
-		}
-
 	}
 }
 
