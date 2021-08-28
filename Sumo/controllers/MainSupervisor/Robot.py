@@ -1,5 +1,6 @@
 import os
 import math
+import traceback
 
 from ProtoCreator import createProto
 from utils import *
@@ -54,9 +55,12 @@ class Robot:
 
     def loadRobot(self, fileName):
         if self.inSimulation: return
-        self.loadController(fileName)
-        self.createProto(os.path.splitext(fileName)[0] + ".json")
-        self.addRobotToSimulation()
+        try:
+            self.loadController(fileName)
+            self.createProto(os.path.splitext(fileName)[0] + ".json")
+            self.addRobotToSimulation()
+        except:
+            traceback.print_exc()
 
     def createProto(self, fileName):
         color = "rojo" if self.id == 0 else "verde"
@@ -65,7 +69,7 @@ class Robot:
             with open(fileName, "r") as file:
                 proto = createProto(file.read(), color)
         except:
-            print("Loading proto failed. Using base.proto")
+            print("Loading proto failed for robot " + self.node_name + ". Using base.proto")
             with open("../../protos/base.proto", "r") as file:
                 proto = file.read().replace("MicrobotRL", color)
 
