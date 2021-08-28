@@ -90,8 +90,6 @@ gameStarted = False
 robots = [None, None]
 robots[0] = Robot(0, supervisor, "Rojo")
 robots[1] = Robot(1, supervisor, "Verde")
-robots[0].addRobot()
-robots[1].addRobot()
 
 # The simulation is running
 simulationRunning = True
@@ -101,10 +99,9 @@ finished = False
 robots[0].clearController()
 robots[1].clearController()
 
-log(1)
 # Send message to robot window to perform setup
 supervisor.wwiSendText("startup")
-log(2)
+
 # For checking the first update with the game running
 first = True
 
@@ -216,6 +213,7 @@ while simulationRunning:
                 if not gameStarted:
                     data = message.split(",", 1)
                     if len(data) > 1:
+                        robots[0].addRobot()
                         robots[0].loadController(data[1])
                 else:
                     print("Please choose controllers before simulation starts.")
@@ -224,6 +222,7 @@ while simulationRunning:
                 if not gameStarted:
                     data = message.split(",", 1)
                     if len(data) > 1:
+                        robots[1].addRobot()
                         robots[1].loadController(data[1])
                 else:
                     print("Please choose controllers before simulation starts.")

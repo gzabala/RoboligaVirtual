@@ -52,6 +52,24 @@ class Robot:
         self._name=""
 
     def addRobot(self):
+        fileName = None
+        if self.id == 0:
+            fileName = "rojo"
+        elif self.id == 1:
+            fileName = "verde"
+
+        # Get relative path
+        filePath = os.path.dirname(os.path.abspath(__file__))
+
+        # Get webots root
+        root = self.supervisor.getRoot()
+        root_children_field = root.getField('children')
+        # Get .wbo file to insert into world
+        if filePath[-4:] == "game":
+          root_children_field.importMFNode(-2, os.path.join(filePath,'nodes/' + fileName + '.wbo'))
+        else:
+          root_children_field.importMFNode(-2, os.path.join(filePath, '../../nodes/' + fileName + '.wbo'))
+
         self.inSimulation = True
         self.wb_node = self.supervisor.getFromDef(self.node_name)
         self.wb_translationField = self.wb_node.getField('translation')
