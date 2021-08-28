@@ -1,6 +1,7 @@
 import os
 import math
 
+from ProtoCreator import createProto
 from utils import *
 
 class Queue:
@@ -51,7 +52,27 @@ class Robot:
 
         self._name=""
 
-    def addRobot(self):
+    def loadRobot(self, fileName):
+        if self.inSimulation: return
+        self.loadController(fileName)
+        self.createProto(os.path.splitext(fileName)[0] + ".json")
+        self.addRobotToSimulation()
+
+    def createProto(self, fileName):
+        color = "rojo" if self.id == 0 else "verde"
+        proto = None
+        try:
+            with open(fileName, "r") as file:
+                proto = createProto(file.read(), color)
+        except:
+            print("Loading proto failed. Using base.proto")
+            with open("../../protos/base.proto", "r") as file:
+                proto = file.read().replace("MicrobotRL", color)
+
+        with open("../../protos/" + color + ".proto", "w") as file:
+            file.write(proto)
+
+    def addRobotToSimulation(self):
         fileName = None
         if self.id == 0:
             fileName = "rojo"
@@ -71,6 +92,7 @@ class Robot:
           root_children_field.importMFNode(-2, os.path.join(filePath, '../../nodes/' + fileName + '.wbo'))
 
         self.inSimulation = True
+
         self.wb_node = self.supervisor.getFromDef(self.node_name)
         self.wb_translationField = self.wb_node.getField('translation')
         self.wb_rotationField = self.wb_node.getField('rotation')
@@ -182,11 +204,13 @@ class Robot:
             controllerFile = open(filePath, "w")
             controllerFile.close()
 
-    def loadController(self, code):
-        name = self.createController(code)
-        if name is not None:
-            self._name=name
-            self.assignController(name)
+    def loadController(self, fileName):
+        with open(fileName) as file:
+            code = file.read()
+            name = self.createController(code)
+            if name is not None:
+                self._name=name
+                self.assignController(name)
 
     def createController(self, fileData):
         '''Opens the controller at the file location and writes the data to it'''

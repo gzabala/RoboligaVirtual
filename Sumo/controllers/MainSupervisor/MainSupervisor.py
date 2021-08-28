@@ -208,22 +208,19 @@ while simulationRunning:
                 mainSupervisor.restartController()
 
             if parts[0] == "robot0File":
-
+                fileName = askfile()
                 # Load the robot 0 controller
                 if not gameStarted:
-                    data = message.split(",", 1)
-                    if len(data) > 1:
-                        robots[0].addRobot()
-                        robots[0].loadController(data[1])
+                    #data = message.split(",", 1)
+                    robots[0].loadRobot(fileName)
                 else:
                     print("Please choose controllers before simulation starts.")
             if parts[0] == "robot1File":
-                # Load the robot 1 controller
+                fileName = askfile()
+                # Load the robot 0 controller
                 if not gameStarted:
-                    data = message.split(",", 1)
-                    if len(data) > 1:
-                        robots[1].addRobot()
-                        robots[1].loadController(data[1])
+                    #data = message.split(",", 1)
+                    robots[1].loadRobot(fileName)
                 else:
                     print("Please choose controllers before simulation starts.")
             if parts[0] == "robot0Unload":

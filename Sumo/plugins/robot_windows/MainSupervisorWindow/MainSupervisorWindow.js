@@ -255,9 +255,7 @@ function resetPressed(){
 }
 
 function openLoadController(robotNumber){
-	//When a load button is pressed - opens the file explorer window
-
-	document.getElementById("robot" + robotNumber + "File").click();
+	window.robotWindow.send("robot"+robotNumber+"File");
 }
 
 function setEnableButton(name, state){
