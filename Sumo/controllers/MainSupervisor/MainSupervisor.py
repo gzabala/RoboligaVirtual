@@ -208,7 +208,7 @@ while simulationRunning:
                 supervisor.worldReload()
 
             if parts[0] == "robot0File":
-                fileName = askfile()
+                fileName = askfile([("Python", ".py")])
                 # Load the robot 0 controller
                 if not gameStarted:
                     #data = message.split(",", 1)
@@ -216,7 +216,7 @@ while simulationRunning:
                 else:
                     print("Please choose controllers before simulation starts.")
             if parts[0] == "robot1File":
-                fileName = askfile()
+                fileName = askfile([("Python", ".py")])
                 # Load the robot 0 controller
                 if not gameStarted:
                     #data = message.split(",", 1)

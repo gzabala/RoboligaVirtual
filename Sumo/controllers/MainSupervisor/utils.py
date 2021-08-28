@@ -19,8 +19,8 @@ root.withdraw() # Hide root window
 def askdirectory():
     return filedialog.askdirectory()
 
-def askfile():
-    return filedialog.askopenfilename()
+def askfile(filetypes):
+    return filedialog.askopenfilename(filetypes=filetypes)
 
 ############################################################
 # Random
