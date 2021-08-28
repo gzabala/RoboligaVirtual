@@ -182,7 +182,6 @@ while simulationRunning:
 
     # If there is a message
     if message != "":
-        log(message)
         # split into parts
         parts = message.split(",")
         # If there are parts
