@@ -206,6 +206,7 @@ while simulationRunning:
                 simulationRunning = False
                 # Restart this supervisor
                 mainSupervisor.restartController()
+                supervisor.worldReload()
 
             if parts[0] == "robot0File":
                 fileName = askfile()
