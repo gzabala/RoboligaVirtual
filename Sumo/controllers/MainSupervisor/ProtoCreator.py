@@ -1,15 +1,26 @@
 import json
 
-def createProto(jsonFile, color):
+limits = {
+    "x": (-370, 370),
+    "y": (-150, 200),
+    "z": (-400, 400)
+}
 
+def clamp(value, min, max):
+    if value < min: return min
+    elif value > max: return max
+    else: return value
+
+def createProto(jsonFile, color):
     robotJson = json.loads(jsonFile)
     dict = {}
     for value in robotJson.values():
         dict[value["customName"]] = {}
         for letter in ("x", "y", "z"):
-            dict[value["customName"]][letter] = value[letter] / 10000
+            min, max = limits[letter]
+            dict[value["customName"]][letter] = clamp(float(value[letter]), min, max) / 10000
         for letter in("rx", "ry", "rz", "a"):
-            dict[value["customName"]][letter] = value[letter]
+            dict[value["customName"]][letter] = float(value[letter])
 
     finalProto = """#VRML_SIM R2020a utf8
 
