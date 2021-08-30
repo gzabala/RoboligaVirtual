@@ -222,8 +222,8 @@ function resetPressed(){
 	window.robotWindow.send("reset");
 }
 
-function openLoadController(robotNumber){
-	window.robotWindow.send("robot"+robotNumber+"File");
+function loadRobot(robotNumber){
+	window.robotWindow.send("loadRobot,"+robotNumber);
 }
 
 function setEnableButton(name, state){

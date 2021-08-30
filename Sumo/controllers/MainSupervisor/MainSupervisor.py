@@ -206,23 +206,18 @@ while simulationRunning:
                 # Restart this supervisor
                 mainSupervisor.restartController()
                 supervisor.worldReload()
+            if parts[0] == "loadRobot":
+                try:
+                    data = message.split(",", 1)
+                    id = int(data[1])
+                    if not gameStarted:
+                        fileName = askfile([("Python", ".py")])
+                        robots[id].loadRobot(fileName)
+                    else:
+                        print("Please choose controllers before simulation starts.")
+                except:
+                    print("No se pudo cargar el robot")
 
-            if parts[0] == "robot0File":
-                fileName = askfile([("Python", ".py")])
-                # Load the robot 0 controller
-                if not gameStarted:
-                    #data = message.split(",", 1)
-                    robots[0].loadRobot(fileName)
-                else:
-                    print("Please choose controllers before simulation starts.")
-            if parts[0] == "robot1File":
-                fileName = askfile([("Python", ".py")])
-                # Load the robot 0 controller
-                if not gameStarted:
-                    #data = message.split(",", 1)
-                    robots[1].loadRobot(fileName)
-                else:
-                    print("Please choose controllers before simulation starts.")
             if parts[0] == 'relocate':
                 data = message.split(",", 1)
                 if len(data) > 1:
