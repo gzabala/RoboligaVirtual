@@ -18,6 +18,9 @@ var visable = false;
 var robot0Name = "Robot Rojo"
 var robot1Name = "Robot Verde"
 
+var robot0Loaded = false;
+var robot1Loaded = false;
+
 function receive (message){
 	//Receive message from the python supervisor
 	//Split on comma
@@ -113,12 +116,14 @@ function loadedController(id, name){
 		document.getElementById("robot0Name").innerText = name;
 		robot0Name = name;
 		document.getElementById("load0").style.display = "none";
+		robot0Loaded = true;
 	}
 	if (id == 1){
 		//Set name and toggle to unload button for robot 1
 		document.getElementById("robot1Name").innerText = name;
 		robot1Name = name;
 		document.getElementById("load1").style.display = "none";
+		robot1Loaded = true;
 	}
 }
 
@@ -192,16 +197,18 @@ function calculateTime(done){
 }
 
 function runPressed(){
-	//When the run button is pressed
-	//Disable the run button
-	setEnableButton("runButton", false);
-	//Send a run command
-	window.robotWindow.send("run");
-	//Enable the pause button
-	setEnableButton("pauseButton", true);
-	//Disable all the loading buttons (cannot change loaded controllers once simulation starts)
-	setEnableButton("load0", false);
-	setEnableButton("load1", false);
+	if (robot0Loaded && robot1Loaded) {
+		//When the run button is pressed
+		//Disable the run button
+		setEnableButton("runButton", false);
+		//Send a run command
+		window.robotWindow.send("run");
+		//Enable the pause button
+		setEnableButton("pauseButton", true);
+		//Disable all the loading buttons (cannot change loaded controllers once simulation starts)
+		setEnableButton("load0", false);
+		setEnableButton("load1", false);
+	}
 }
 
 function pausePressed(){

@@ -39,7 +39,7 @@ class Robot:
         self.id = id
         self.supervisor = supervisor
         self.node_name = node_name
-        self.wb_node = None
+        self.wb_node = self.supervisor.getFromDef(self.node_name)
 
         self.inSimulation = False
 
@@ -56,9 +56,9 @@ class Robot:
     def loadRobot(self, fileName):
         if self.inSimulation: return
         try:
-            self.loadController(fileName)
-            self.createProto(os.path.splitext(fileName)[0] + ".json")
-            self.addRobotToSimulation()
+            if fileName != "" and self.loadController(fileName):
+                self.createProto(os.path.splitext(fileName)[0] + ".json")
+                self.addRobotToSimulation()
         except:
             traceback.print_exc()
 
@@ -68,20 +68,17 @@ class Robot:
         try:
             with open(fileName, "r") as file:
                 proto = createProto(file.read(), color)
+                print(f"Cargando robot \"{os.path.basename(fileName)}\" para {self.node_name}.")
         except:
-            print("Loading proto failed for robot " + self.node_name + ". Using base.proto")
             with open("../../protos/base.proto", "r") as file:
                 proto = file.read().replace("MicrobotRL", color)
+                print(f"Cargando robot por defecto para {self.node_name}.")
 
         with open("../../protos/" + color + ".proto", "w") as file:
             file.write(proto)
 
     def addRobotToSimulation(self):
-        fileName = None
-        if self.id == 0:
-            fileName = "rojo"
-        elif self.id == 1:
-            fileName = "verde"
+        color = "rojo" if self.id == 0 else "verde"
 
         # Get relative path
         filePath = os.path.dirname(os.path.abspath(__file__))
@@ -91,9 +88,9 @@ class Robot:
         root_children_field = root.getField('children')
         # Get .wbo file to insert into world
         if filePath[-4:] == "game":
-          root_children_field.importMFNode(-2, os.path.join(filePath,'nodes/' + fileName + '.wbo'))
+          root_children_field.importMFNode(-2, os.path.join(filePath,'nodes/' + color + '.wbo'))
         else:
-          root_children_field.importMFNode(-2, os.path.join(filePath, '../../nodes/' + fileName + '.wbo'))
+          root_children_field.importMFNode(-2, os.path.join(filePath, '../../nodes/' + color + '.wbo'))
 
         self.inSimulation = True
 
@@ -127,8 +124,7 @@ class Robot:
         self.wb_node.getField('max_velocity').setSFFloat(vel)
 
     def _isStopped(self) -> bool:
-        if self.wb_node is None:
-            return True
+        if not self.inSimulation: return True
         vel = self.wb_node.getVelocity()
         robotStopped = abs(vel[0]) < 0.01 and abs(vel[1]) < 0.01 and abs(vel[2]) < 0.01
         return robotStopped
@@ -159,13 +155,13 @@ class Robot:
         return(math.sqrt(self.position[0]*self.position[0]+self.position[2]*self.position[2])>LOSS_DIST)
 
     def crashed(self):
-        if self.wb_node is None:
-            return False
+        if not self.inSimulation: return False
         vel = self.wb_node.getVelocity()
         posy=self.position[1]
         return(vel[1]>0.8 or posy>0.12)
 
     def restartController(self):
+        if not self.inSimulation: return
         self.wb_node.restartController()
 
     def resetPhysics(self):
@@ -215,14 +211,16 @@ class Robot:
             if name is not None:
                 self._name=name
                 self.assignController(name)
+                return True
+            else:
+                return False
 
     def createController(self, fileData):
         '''Opens the controller at the file location and writes the data to it'''
         try:
             filePath = self.getControllerPath()
 
-            if filePath == None:
-                return None, None
+            if filePath == None: return None
 
             controllerFile = open(filePath, "w")
             controllerFile.write(fileData)
@@ -236,11 +234,11 @@ class Robot:
                 # Return data with a name
                 return name
 
-            supervisor.wwiSendText("alert,ERROR: El robot no tiene nombre")
+            self.supervisor.wwiSendText("alert,ERROR: El robot no tiene nombre")
             # Return data without a name
             return None
         except Exception as ex:
-            supervisor.wwiSendText("alert,ERROR: El archivo no es un controlador válido")
+            self.supervisor.wwiSendText("alert,ERROR: El archivo no es un controlador válido")
             return None
 
     def assignController(self, name) -> None:
