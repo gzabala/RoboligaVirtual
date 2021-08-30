@@ -114,13 +114,16 @@ function loadedController(id, name){
 	if (id == 0){
 		//Set name and toggle to unload button for robot 0
 		document.getElementById("robot0Name").innerText = name;
+		document.getElementById("robot0Name").style.display = "inline-block";
 		robot0Name = name;
 		document.getElementById("load0").style.display = "none";
 		robot0Loaded = true;
+
 	}
 	if (id == 1){
 		//Set name and toggle to unload button for robot 1
 		document.getElementById("robot1Name").innerText = name;
+		document.getElementById("robot1Name").style.display = "inline-block";
 		robot1Name = name;
 		document.getElementById("load1").style.display = "none";
 		robot1Loaded = true;

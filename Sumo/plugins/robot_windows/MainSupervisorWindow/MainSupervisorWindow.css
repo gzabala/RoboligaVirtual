@@ -1,13 +1,13 @@
 
 
-@font-face { 
-  font-family: OpenSansBold; 
+@font-face {
+  font-family: OpenSansBold;
   src: url('fonts/OpenSans-ExtraBold.ttf');
- } 
-@font-face { 
-  font-family: OpenSans; 
+ }
+@font-face {
+  font-family: OpenSans;
   src: url('fonts/OpenSans-Bold.ttf');
- } 
+ }
 *{
 	font-family: OpenSans, sans-serif;
 }
@@ -103,10 +103,11 @@ body{
   font-size: 13px;
   padding: 10px 15px;
   border: 5px solid;
-  border-color: #5EBA53;
+  border-color: #248895;
   border-radius: 0px;
-  color: #5EBA53;
+  color: #248895;
   background: #eeeeee;
+  margin: 10px 0px;
 }
 
 .buttonUnload{
@@ -198,7 +199,7 @@ body{
   position: absolute;
   background-color: black;
   opacity: 0.9;
-  width:100%; 
+  width:100%;
   height:100%;
   z-index: 1;
 }
