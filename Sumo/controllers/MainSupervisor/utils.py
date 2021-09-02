@@ -1,26 +1,9 @@
 import random
 
-import tkinter as tk
-from tkinter import filedialog
-
 # Settings
 TIME_RELOC=15
 TIME_OUT=20
 LOSS_DIST=0.76
-
-
-############################################################
-# File dialogs
-# NOTE(Richo): Important initialization! DO NOT DELETE!
-root = tk.Tk()
-root.wm_attributes('-topmost', 1) # Stay on top
-root.withdraw() # Hide root window
-
-def askdirectory():
-    return filedialog.askdirectory()
-
-def askfile(filetypes):
-    return filedialog.askopenfilename(filetypes=filetypes)
 
 ############################################################
 # Random
