@@ -21,7 +21,8 @@ body{
 }
 
 #robotTable{
-	margin:0 auto;
+	padding: 10px 0px;
+  margin: 0;
 	width: 100%;
 }
 
@@ -107,23 +108,7 @@ body{
   border-radius: 0px;
   color: #248895;
   background: #eeeeee;
-  margin: 10px 0px;
-}
-
-.buttonUnload{
-  cursor: pointer;
-  font-family: OpenSansBold;
-  text-transform: uppercase;
-  font-weight: bold;
-  line-height: 1.5;
-  padding: 1em 2em;
-  font-size: 13px;
-  padding: 10px 15px;
-  border: 5px solid;
-  border-color: #F24236;
-  border-radius: 0px;
-  color: #F24236;
-  background: #eeeeee;
+  width: 90%;
 }
 
 .buttonLoad:disabled,.buttonUnload:disabled{

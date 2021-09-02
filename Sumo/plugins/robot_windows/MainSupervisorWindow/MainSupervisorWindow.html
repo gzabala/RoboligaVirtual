@@ -7,6 +7,7 @@
 		<link rel="stylesheet" type="text/css" href="MainSupervisorWindow.css">
 	</head>
 	<body>
+    <input id="open-file-input" type="file" style="display: none;">
 		<div id="winning-screen" onclick="hide_winning_screen()"><h1 id="winning-team">DRAW</h1></div>
 		<div style="width:100%; height:100%">
   		<div class="smallSection rowType1">
@@ -20,11 +21,21 @@
   				<tr>
   					<th class="halfRow">
   						<p id="robot0Name" style="display:none; color: crimson; font-size: large;">None</p>
-  						<button class="button buttonLoad" onclick="loadRobot(0)" style="display:inline-block;" id="load0">Cargar<br>Controlador</button>
+  						<button class="button buttonLoad" onclick="loadController(0)" style="display:inline-block;" id="loadController0">Cargar<br>Controlador</button>
   					</th>
   					<th class="halfRow">
   						<p id="robot1Name" style="display:none; color: #009423; font-size: large;">None</p>
-  						<button class="button buttonLoad" onclick="loadRobot(1)" style="display:inline-block;" id="load1">Cargar<br>Controlador</button>
+  						<button class="button buttonLoad" onclick="loadController(1)" style="display:inline-block;" id="loadController1">Cargar<br>Controlador</button>
+  					</th>
+  				</tr>
+  				<tr>
+  					<th class="halfRow">
+  						<p id="robot0Proto" style="display:none; color: crimson; font-size: large;">None</p>
+  						<button class="button buttonLoad" onclick="loadRobot(0)" style="display:inline-block;" id="loadRobot0">Cargar<br>Robot</button>
+  					</th>
+  					<th class="halfRow">
+  						<p id="robot1Proto" style="display:none; color: #009423; font-size: large;">None</p>
+  						<button class="button buttonLoad" onclick="loadRobot(1)" style="display:inline-block;" id="loadRobot1">Cargar<br>Robot</button>
   					</th>
   				</tr>
   			</table>

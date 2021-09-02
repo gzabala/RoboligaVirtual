@@ -39,13 +39,11 @@ function receive (message){
 				//Update the information on the robot window every frame (of game time)
 				update(parts.slice(1,parts.length + 1));
 				break;
-			case "loaded0":
-				//Robot 0's controller has been loaded
-				loadedController(0, parts[1]);
+			case "loadedController":
+				loadedController(parts[1], parts[2]);
 				break;
-			case "loaded1":
-				//Robot 1's controller has been loaded
-				loadedController(1, parts[1]);
+			case "loadedProto":
+				loadedProto(parts[1], parts[2]);
 				break;
 			case "lostJ1":
 				lostJ1();
@@ -116,7 +114,7 @@ function loadedController(id, name){
 		document.getElementById("robot0Name").innerText = name;
 		document.getElementById("robot0Name").style.display = "inline-block";
 		robot0Name = name;
-		document.getElementById("load0").style.display = "none";
+		document.getElementById("loadController0").style.display = "none";
 		robot0Loaded = true;
 
 	}
@@ -125,8 +123,25 @@ function loadedController(id, name){
 		document.getElementById("robot1Name").innerText = name;
 		document.getElementById("robot1Name").style.display = "inline-block";
 		robot1Name = name;
-		document.getElementById("load1").style.display = "none";
+		document.getElementById("loadController1").style.display = "none";
 		robot1Loaded = true;
+	}
+}
+
+function loadedProto(id, name){
+	//A controller has been loaded into a robot id is 0 or 1 and name is the name of the robot
+
+	if (id == 0){
+		//Set name and toggle to unload button for robot 0
+		document.getElementById("robot0Proto").innerText = name;
+		document.getElementById("robot0Proto").style.display = "inline-block";
+		document.getElementById("loadRobot0").style.display = "none";
+	}
+	if (id == 1){
+		//Set name and toggle to unload button for robot 1
+		document.getElementById("robot1Proto").innerText = name;
+		document.getElementById("robot1Proto").style.display = "inline-block";
+		document.getElementById("loadRobot1").style.display = "none";
 	}
 }
 
@@ -209,8 +224,10 @@ function runPressed(){
 		//Enable the pause button
 		setEnableButton("pauseButton", true);
 		//Disable all the loading buttons (cannot change loaded controllers once simulation starts)
-		setEnableButton("load0", false);
-		setEnableButton("load1", false);
+		setEnableButton("loadController0", false);
+		setEnableButton("loadController1", false);
+		setEnableButton("loadRobot0", false);
+		setEnableButton("loadRobot1", false);
 	}
 }
 
@@ -232,8 +249,47 @@ function resetPressed(){
 	window.robotWindow.send("reset");
 }
 
+function loadController(robotNumber) {
+	readFile().then(file => {
+		if (!file.name.endsWith(".py")) {
+			alert("El archivo no es un controlador válido");
+		} else {
+			let msg = ["loadController", robotNumber, file.name, file.contents].join(",");
+			window.robotWindow.send(msg);
+		}
+	});
+}
+
 function loadRobot(robotNumber){
-	window.robotWindow.send("loadRobot,"+robotNumber);
+	readFile().then(file => {
+		if (!file.name.endsWith(".json")) {
+			alert("El archivo no es una definición de robot válida");
+		} else {
+			let msg = ["loadRobot", robotNumber, file.name, file.contents].join(",");
+			window.robotWindow.send(msg);
+		}
+	});
+}
+
+function readFile() {
+	return new Promise((res, rej) => {
+		let input = document.getElementById("open-file-input");
+		input.onchange = function () {
+			let file = input.files[0];
+			input.value = null;
+			if (file == undefined) return res(null);
+
+			let reader = new FileReader();
+			reader.onload = function(e) {
+				res({
+					name: file.name,
+					contents: e.target.result
+				})
+			};
+			reader.readAsText(file);
+		};
+		input.click();
+	});
 }
 
 function setEnableButton(name, state){

@@ -102,19 +102,10 @@ robots[1].clearController()
 # Send message to robot window to perform setup
 supervisor.wwiSendText("startup")
 
-# For checking the first update with the game running
-first = True
-
 # Until the match ends (also while paused)
 while simulationRunning:
     r0ts=robots[0].timeStopped()
     r1ts=robots[1].timeStopped()
-    # The first frame of the game running only
-    if first and currentlyRunning:
-        # Restart both controllers
-        robots[0].restartController()
-        robots[1].restartController()
-        first = False
 
     if robots[0].inSimulation:
 
@@ -187,7 +178,10 @@ while simulationRunning:
         # If there are parts
         if len(parts) > 0:
             if parts[0] == "run":
-                if robots[0].inSimulation and robots[1].inSimulation:
+                if not gameStarted:
+                    # Add robots to simulation
+                    robots[0].addToSimulation()
+                    robots[1].addToSimulation()
                     # Start running the match
                     currentlyRunning = True
                     lastTime = supervisor.getTime()
@@ -207,15 +201,28 @@ while simulationRunning:
                 # Restart this supervisor
                 mainSupervisor.restartController()
                 supervisor.worldReload()
+            if parts[0] == "loadController":
+                try:
+                    data = message.split(",", 3)
+                    id = int(data[1])
+                    fileName = data[2]
+                    fileContents = data[3]
+                    if not gameStarted:
+                        robots[id].loadController(fileName, fileContents)
+                    else:
+                        print("No se puede cambiar el controlador una vez que empezó la simulación")
+                except:
+                    print("No se pudo cargar el controlador")
             if parts[0] == "loadRobot":
                 try:
-                    data = message.split(",", 1)
+                    data = message.split(",", 3)
                     id = int(data[1])
+                    fileName = data[2]
+                    fileContents = data[3]
                     if not gameStarted:
-                        fileName = askfile([("Python", ".py")])
-                        robots[id].loadRobot(fileName)
+                        robots[id].loadRobot(fileName, fileContents)
                     else:
-                        print("Please choose controllers before simulation starts.")
+                        print("No se puede cambiar el robot una vez que empezó la simulación")
                 except:
                     print("No se pudo cargar el robot")
 

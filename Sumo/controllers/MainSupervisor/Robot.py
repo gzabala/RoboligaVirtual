@@ -41,6 +41,8 @@ class Robot:
         self.node_name = node_name
         self.wb_node = self.supervisor.getFromDef(self.node_name)
 
+        self.color = "rojo" if self.id == 0 else "verde"
+
         self.inSimulation = False
 
         self.history = RobotHistory()
@@ -52,33 +54,10 @@ class Robot:
         self.message = []
 
         self._name=""
+        self._proto = None
 
-    def loadRobot(self, fileName):
-        if self.inSimulation: return
-        try:
-            if fileName != "" and self.loadController(fileName):
-                self.createProto(os.path.splitext(fileName)[0] + ".json")
-                self.addRobotToSimulation()
-        except:
-            traceback.print_exc()
-
-    def createProto(self, fileName):
-        color = "rojo" if self.id == 0 else "verde"
-        proto = None
-        try:
-            with open(fileName, "r") as file:
-                proto = createProto(file.read(), color)
-                print(f"Cargando robot \"{os.path.basename(fileName)}\" para {self.node_name}.")
-        except:
-            with open("../../protos/base.proto", "r") as file:
-                proto = file.read().replace("MicrobotRL", color)
-                print(f"Cargando robot por defecto para {self.node_name}.")
-
-        with open("../../protos/" + color + ".proto", "w") as file:
-            file.write(proto)
-
-    def addRobotToSimulation(self):
-        color = "rojo" if self.id == 0 else "verde"
+    def addToSimulation(self):
+        self.writeProto()
 
         # Get relative path
         filePath = os.path.dirname(os.path.abspath(__file__))
@@ -88,9 +67,9 @@ class Robot:
         root_children_field = root.getField('children')
         # Get .wbo file to insert into world
         if filePath[-4:] == "game":
-          root_children_field.importMFNode(-2, os.path.join(filePath,'nodes/' + color + '.wbo'))
+          root_children_field.importMFNode(-2, os.path.join(filePath,'nodes/' + self.color + '.wbo'))
         else:
-          root_children_field.importMFNode(-2, os.path.join(filePath, '../../nodes/' + color + '.wbo'))
+          root_children_field.importMFNode(-2, os.path.join(filePath, '../../nodes/' + self.color + '.wbo'))
 
         self.inSimulation = True
 
@@ -204,16 +183,37 @@ class Robot:
             controllerFile = open(filePath, "w")
             controllerFile.close()
 
-    def loadController(self, fileName):
-        with open(fileName) as file:
-            code = file.read()
-            name = self.createController(code)
-            if name is not None:
-                self._name=name
-                self.assignController(name)
-                return True
-            else:
-                return False
+    def loadController(self, fileName, fileContents):
+        code = fileContents
+        name = self.createController(code)
+        if name is not None:
+            self._name = name
+            self.assignController(name)
+
+    def loadRobot(self, fileName, fileContents):
+        data = fileContents
+        proto = self.createProto(data)
+        if proto is not None:
+            self._proto = proto
+            self.assignProto(fileName)
+
+    def createProto(self, data):
+        try:
+            return createProto(data, self.color)
+        except:
+            traceback.print_exc()
+            return None
+
+    def writeProto(self):
+        proto = self._proto
+        if proto is None:
+            with open("../../protos/base.proto", "r") as file:
+                proto = file.read().replace("MicrobotRL", self.color)
+                print(f"Cargando robot por defecto para {self.node_name}.")
+
+        with open("../../protos/" + self.color + ".proto", "w") as file:
+            file.write(proto)
+
 
     def createController(self, fileData):
         '''Opens the controller at the file location and writes the data to it'''
@@ -245,7 +245,11 @@ class Robot:
         '''Send message to robot window to say that controller has loaded and with what name'''
         if name == None: name = "None"
         name = name.strip()
-        self.supervisor.wwiSendText("loaded" + str(self.id) +"," + name)
+        self.supervisor.wwiSendText("loadedController," + str(self.id) +"," + name)
+
+
+    def assignProto(self, name) -> None:
+        self.supervisor.wwiSendText("loadedProto," + str(self.id) +"," + name)
 
     def resetController(self) -> None:
         '''Send message to robot window to say that controller has been unloaded'''
