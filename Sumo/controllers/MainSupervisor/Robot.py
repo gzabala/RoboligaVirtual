@@ -251,6 +251,7 @@ class Robot:
 
 
     def assignProto(self, name) -> None:
+        name = os.path.splitext(name.strip())[0]
         self.supervisor.wwiSendText("loadedProto," + str(self.id) +"," + name)
 
     def resetController(self) -> None:
