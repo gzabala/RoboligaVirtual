@@ -108,22 +108,17 @@ function updateHistory(history0){
 
 function loadedController(id, name){
 	//A controller has been loaded into a robot id is 0 or 1 and name is the name of the robot
-
-	if (id == 0){
+	
+	if (id == 0) {
 		//Set name and toggle to unload button for robot 0
 		document.getElementById("robot0Name").innerText = name;
-		document.getElementById("robot0Name").style.display = "inline-block";
 		robot0Name = name;
-		document.getElementById("loadController0").style.display = "none";
 		robot0Loaded = true;
-
 	}
-	if (id == 1){
+	if (id == 1) {
 		//Set name and toggle to unload button for robot 1
 		document.getElementById("robot1Name").innerText = name;
-		document.getElementById("robot1Name").style.display = "inline-block";
 		robot1Name = name;
-		document.getElementById("loadController1").style.display = "none";
 		robot1Loaded = true;
 	}
 }
@@ -134,14 +129,10 @@ function loadedProto(id, name){
 	if (id == 0){
 		//Set name and toggle to unload button for robot 0
 		document.getElementById("robot0Proto").innerText = name;
-		document.getElementById("robot0Proto").style.display = "inline-block";
-		document.getElementById("loadRobot0").style.display = "none";
 	}
 	if (id == 1){
 		//Set name and toggle to unload button for robot 1
 		document.getElementById("robot1Proto").innerText = name;
-		document.getElementById("robot1Proto").style.display = "inline-block";
-		document.getElementById("loadRobot1").style.display = "none";
 	}
 }
 

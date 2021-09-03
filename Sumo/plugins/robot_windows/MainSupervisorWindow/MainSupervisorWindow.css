@@ -94,6 +94,15 @@ body{
 	background-color: #7EE8FA;
 }
 
+.btn-outline-dark {
+  border: 1px solid transparent !important;
+}
+
+.btn-outline-dark:hover {
+  border: 1px solid black !important;
+  background: transparent !important;
+  color: #212529 !important;
+}
 
 .buttonLoad{
   cursor: pointer;
