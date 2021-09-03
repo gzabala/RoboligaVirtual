@@ -56,6 +56,8 @@ class Robot:
         self._name=""
         self._proto = None
 
+        self.clearController()
+
     def addToSimulation(self):
         self.writeProto()
 

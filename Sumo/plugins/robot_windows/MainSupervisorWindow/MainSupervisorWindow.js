@@ -108,7 +108,7 @@ function updateHistory(history0){
 
 function loadedController(id, name){
 	//A controller has been loaded into a robot id is 0 or 1 and name is the name of the robot
-	
+
 	if (id == 0) {
 		//Set name and toggle to unload button for robot 0
 		document.getElementById("robot0Name").innerText = name;
@@ -206,20 +206,18 @@ function calculateTime(done){
 }
 
 function runPressed(){
-	if (robot0Loaded && robot1Loaded) {
-		//When the run button is pressed
-		//Disable the run button
-		setEnableButton("runButton", false);
-		//Send a run command
-		window.robotWindow.send("run");
-		//Enable the pause button
-		setEnableButton("pauseButton", true);
-		//Disable all the loading buttons (cannot change loaded controllers once simulation starts)
-		setEnableButton("loadController0", false);
-		setEnableButton("loadController1", false);
-		setEnableButton("loadRobot0", false);
-		setEnableButton("loadRobot1", false);
-	}
+	//When the run button is pressed
+	//Disable the run button
+	setEnableButton("runButton", false);
+	//Send a run command
+	window.robotWindow.send("run");
+	//Enable the pause button
+	setEnableButton("pauseButton", true);
+	//Disable all the loading buttons (cannot change loaded controllers once simulation starts)
+	setEnableButton("loadController0", false);
+	setEnableButton("loadController1", false);
+	setEnableButton("loadRobot0", false);
+	setEnableButton("loadRobot1", false);
 }
 
 function pausePressed(){
