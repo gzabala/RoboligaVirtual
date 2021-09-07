@@ -178,12 +178,12 @@ while simulationRunning:
         # If there are parts
         if len(parts) > 0:
             if parts[0] == "run":
+                currentlyRunning = True
                 if not gameStarted:
                     # Add robots to simulation
                     robots[0].addToSimulation()
                     robots[1].addToSimulation()
                     # Start running the match
-                    currentlyRunning = True
                     lastTime = supervisor.getTime()
                     gameStarted = True
             if parts[0] == "pause":
@@ -260,3 +260,5 @@ while simulationRunning:
         if step == -1:
             # Stop simulating
             simulationRunning = False
+    else:
+        supervisor.step(0)
