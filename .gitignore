@@ -15,3 +15,7 @@ Sumo/equipos
 __pycache__/
 *.py[cod]
 *$py.class
+Sumo/ejemplos/microbot.json
+Sumo/protos/rojo.proto
+Sumo/protos/verde.proto
+Sumo/worlds/.sumov1.wbproj
