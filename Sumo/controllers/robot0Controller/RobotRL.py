@@ -76,6 +76,10 @@ class RobotRL:
         hsv = colorsys.rgb_to_hsv(bgra[2]/255, bgra[1]/255, bgra[0]/255)
         return hsv[2]*100
 
+    def getColorPisoRGB(self):
+        bgra = self.__camaraPiso.getImage()
+        return bgra[2], bgra[1], bgra[0]
+
     def getDI(self):
         return self.__senDistI.getValue()
 
