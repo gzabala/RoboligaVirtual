@@ -1,0 +1,69 @@
+#VRML_SIM R2021a utf8
+# tags: static
+
+PROTO HazardMap [
+    field SFVec3f    translation       0 0 0
+    field SFRotation rotation          0 0 0 0
+    field SFBool     found             FALSE
+    field SFString   name              "Hazard Map"
+    field SFString   type              "F"
+    field SFInt32    scoreWorth        10
+]
+{
+    %{
+        if fields.type.value == "O" then
+            if fields.found.value then
+                filename = "\"./textures/placard-5.2-organic-peroxide_found.png\""   
+            else
+                filename = "\"./textures/placard-5.2-organic-peroxide.png\"" 
+            end
+        end
+        if fields.type.value == "F" then
+            if fields.found.value then
+                filename = "\"./textures/placard-2-flammable-gas_found.png\""    
+            else
+                filename = "\"./textures/placard-2-flammable-gas.png\""    
+            end
+        end
+        if fields.type.value == "P" then
+            if fields.found.value then
+                filename = "\"./textures/placard-6-poison_found.png\""  
+            else
+                filename = "\"./textures/placard-6-poison.png\""  
+            end
+        end
+        if fields.type.value == "C" then
+            if fields.found.value then
+                filename = "\"./textures/placard-8-corrosive_found.png\"" 
+            else
+                filename = "\"./textures/placard-8-corrosive.png\""  
+            end
+        end
+    }%
+    Transform{
+        translation IS translation
+        rotation IS rotation
+        children [
+            Solid {
+               
+                translation 0 0 0
+                rotation 0 0.707105 -0.707108 3.14159
+                children [
+                    Shape {
+                        appearance Appearance {
+                            texture DEF human0texture ImageTexture {
+                                url [ %{= filename}% ]
+                            }
+                        }
+                        geometry DEF VICTIMPLANE Plane {
+                            size 0.016 0.016
+                        }
+                        isPickable  FALSE
+                    }
+                ]
+                name IS name
+            }
+        ]
+    }
+}
+
