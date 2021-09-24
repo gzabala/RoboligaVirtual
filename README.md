@@ -3,4 +3,4 @@
 
 Para más información visitá nuestra [wiki](https://github.com/gzabala/RoboligaVirtual/wiki)
 
-Y no te dejes de sumar a la comunidad en [Discord](https://discord.gg/SZ24uFV6sq)
+Y no dejes de sumarte a la comunidad en [Discord](https://discord.gg/SZ24uFV6sq)
