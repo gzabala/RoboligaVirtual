@@ -16,4 +16,3 @@ __pycache__/
 *.py[cod]
 *$py.class
 Sumo/ejemplos/microbot.json
-Sumo/worlds/.sumov1.wbproj
