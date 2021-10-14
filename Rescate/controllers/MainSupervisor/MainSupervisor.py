@@ -415,7 +415,7 @@ class StartTile(Tile):
 def resetControllerFile(manual=False) -> None:
     '''Remove the controller'''
     path = os.path.dirname(os.path.abspath(__file__))
-    if path[-4:] == "game":
+    if path[-4:] != "game":
       path = os.path.join(path, "controllers/robot0Controller")
     else:
       path = os.path.join(path, "../robot0Controller")
@@ -441,7 +441,7 @@ def resetRobotProto(manual=False) -> None:
     '''
     path = os.path.dirname(os.path.abspath(__file__))
 
-    if path[-4:] == "game":
+    if path[-4:] != "game":
       default_robot_proto = os.path.join(path, 'protos/E-puck-custom-default.proto')
       robot_proto = os.path.join(path,'protos/custom_robot.proto')
     else: 
@@ -777,7 +777,7 @@ def add_robot():
         root = supervisor.getRoot()
         root_children_field = root.getField('children')
         # Get .wbo file to insert into world
-        if filePath[-4:] == "game":
+        if filePath[-4:] != "game":
           root_children_field.importMFNode(12, os.path.join(filePath,'nodes/robot0.wbo'))
         else:
           root_children_field.importMFNode(12, os.path.join(filePath, '../../nodes/robot0.wbo'))
@@ -806,7 +806,7 @@ def write_log():
     log_str = create_log_str()
     # Get relative path to logs dir
     filePath = os.path.dirname(os.path.abspath(__file__))
-    if filePath[-4:] == "game":
+    if filePath[-4:] != "game":
       filePath = os.path.join(filePath, "logs/")
     else:
       filePath = os.path.join(filePath, "../../logs/")
@@ -1495,7 +1495,7 @@ def generate_robot_proto(robot_json):
 
       path = os.path.dirname(os.path.abspath(__file__))
 
-      if path[-4:] == "game":
+      if path[-4:] != "game":
         path = os.path.join(path, "protos")
       else:
         path = os.path.join(path, "../../protos")
@@ -1723,7 +1723,7 @@ if __name__ == '__main__':
         if first and currentlyRunning:
             if configData[2]:
               path = os.path.dirname(os.path.abspath(__file__))
-              if path[-4:] == "game":
+              if path[-4:] != "game":
                 path = os.path.join(path, "../recording.mp4")
               else:
                 path = os.path.join(path, "../../../recording.mp4")
