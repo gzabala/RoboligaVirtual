@@ -26,7 +26,7 @@ import mapAnswer
 
 # Version info
 stream = 21
-version = "21.2.1"
+version = "21.2.2"
 
 
 # Create the instance of the supervisor class
@@ -1698,9 +1698,7 @@ if __name__ == '__main__':
 
     #Calculate the solution arrays for the map layout
     MapAnswer = mapAnswer.MapAnswer(supervisor)
-    mapSolution = MapAnswer.generateAnswer()
-    #for m in mapSolution:
-    #  print(f"{m},")
+    mapSolution = MapAnswer.generateAnswer(False)
     
     # -------------------------------
 
