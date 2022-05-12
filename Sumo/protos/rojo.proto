@@ -35,8 +35,8 @@
                         }
 
                         DistanceSensor {
-                        translation -0.02 0.007 -0.04
-                        rotation 0.0 1.0 0.0 1.57
+                        translation -0.02 -0.0056 -0.04
+                        rotation 0.0 1.0 0.0 1.97
                         children [
                             DEF sensor Shape {
                             appearance PBRAppearance {
@@ -62,8 +62,8 @@
 
                         }
                         DistanceSensor {
-                        translation 0.02 0.007 -0.039984
-                        rotation 0.0 1.0 0.0 1.57
+                        translation 0.02 -0.0056 -0.039984
+                        rotation 0.0 1.0 0.0 1.17
                         children [
                             DEF sensor Shape {
                             appearance PBRAppearance {
@@ -117,8 +117,8 @@
                             }
                         }
                         Camera {
-                            translation -0.02 0.0 -0.04
-                            rotation 1.0 0.0 0.0 -1.5708
+                            translation 0.0 0.02 -0.04
+                            rotation -1.0 0.0 0.0 0.7
                             name "colorPiso"
                             width 1
                             height 1

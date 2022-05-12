@@ -1,4 +1,4 @@
-#VRML_OBJ R2021a utf8
+#VRML_OBJ R2022a utf8
 DEF Rojo rojo {
   translation -0.2 0.0217 0
   name "Rojo"
@@ -6,6 +6,7 @@ DEF Rojo rojo {
   extensionSlot [
     DEF equipo Solid {
       translation 0 0.024 0
+      rotation -1 0 0 1.57
       children [
         DEF placa Shape {
           appearance PBRAppearance {

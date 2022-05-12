@@ -1,4 +1,4 @@
-#VRML_SIM R2020a utf8
+#VRML_SIM R2022a utf8
 # license: Copyright Cyberbotics Ltd. Licensed for use only with Webots.
 # license url: https://cyberbotics.com/webots_assets_license
 # documentation url: https://www.cyberbotics.com/doc/guide/microbot
@@ -117,7 +117,7 @@ PROTO MicrobotRL [
       }
  	  Camera {
 		  translation -0.02 0 -0.04
-		  rotation 1 0 0 -1.5708
+		  rotation 0 0 1 -1.5708
 		  name "colorPiso"
 		  width 1
 		  height 1
@@ -247,7 +247,7 @@ PROTO MicrobotRL [
           physics DEF WHEEL_PHYSICS Physics {
           }
           boundingObject DEF WHEEL_BOUNDING_OBJECT Transform {
-            rotation 0 0 1 1.57
+            rotation 0 1 0 1.57
             children Cylinder {
               radius 0.0125
               height 0.0055
@@ -373,6 +373,7 @@ PROTO MicrobotRL [
       children [
         Transform {
           translation 0 -0.009 -0.03
+          rotation 1 0 0 -1.57
           children Capsule {
             height 0.018
             radius 0.0036
