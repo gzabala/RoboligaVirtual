@@ -1,11 +1,20 @@
-#VRML_SIM R2022a utf8
+#VRML_SIM R2023a utf8
+
+EXTERNPROTO "https://raw.githubusercontent.com/cyberbotics/webots/R2023a/projects/objects/floors/protos/Floor.proto"
+EXTERNPROTO "https://raw.githubusercontent.com/cyberbotics/webots/R2023a/projects/objects/backgrounds/protos/TexturedBackgroundLight.proto"
+EXTERNPROTO "https://raw.githubusercontent.com/cyberbotics/webots/R2023a/projects/objects/backgrounds/protos/TexturedBackground.proto"
+EXTERNPROTO "https://raw.githubusercontent.com/cyberbotics/webots/R2023a/projects/appearances/protos/Rubber.proto"
+IMPORTABLE EXTERNPROTO "../protos/rojo.proto"
+IMPORTABLE EXTERNPROTO "../protos/verde.proto"
+IMPORTABLE EXTERNPROTO "../protos/base.proto"
+
 WorldInfo {
   basicTimeStep 16
   coordinateSystem "NUE"
 }
 Viewpoint {
   orientation -0.6757211129476477 0.6859733938634708 0.2698916086658197 2.66548664896234
-  position 0.09820144643393527 2.1904712787395244 2.058342366111915
+  position 0.14622766948680438 2.6232581828162878 2.3571496276658666
 }
 TexturedBackground {
 }
@@ -53,5 +62,4 @@ DEF MAINSUPERVISOR Robot {
   controller "MainSupervisor"
   supervisor TRUE
   window "MainSupervisorWindow"
-  showWindow TRUE
 }

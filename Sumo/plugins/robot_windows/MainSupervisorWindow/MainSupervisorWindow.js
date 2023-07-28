@@ -9,6 +9,7 @@ Modified by Ricardo Moran and Gonzalo Zabala (CAETI - UAI)
 
 */
 
+import RobotWindow from 'https://cyberbotics.com/wwi/R2023a/RobotWindow.js';
 
 //The total time at the start
 var maxTime = 2.5 * 60;
@@ -141,6 +142,16 @@ function startup (){
 	setEnableButton("runButton", true);
 	setEnableButton("pauseButton", false);
 	setEnableButton("resetButton", true);
+	setEnableButton("loadController0", true);
+	setEnableButton("loadController1", true);
+	setEnableButton("loadRobot0", true);
+	setEnableButton("loadRobot1", true);
+
+	document.getElementById("robot0Name").innerText = "Sin controlador";
+	document.getElementById("robot1Name").innerText = "Sin controlador";
+	document.getElementById("robot0Proto").innerText = "Robot base";
+	document.getElementById("robot1Proto").innerText = "Robot base";
+
 }
 
 function update (data){
@@ -205,7 +216,7 @@ function calculateTime(done){
 	return mins + ":" + seconds;
 }
 
-function runPressed(){
+window.runPressed=function(){
 	//When the run button is pressed
 	//Disable the run button
 	setEnableButton("runButton", false);
@@ -220,7 +231,7 @@ function runPressed(){
 	setEnableButton("loadRobot1", false);
 }
 
-function pausePressed(){
+window.pausePressed=function(){
 	//When the pause button is pressed
 	//Turn off pause button, on run button and send signal to pause
 	setEnableButton("pauseButton", false);
@@ -228,7 +239,7 @@ function pausePressed(){
 	setEnableButton("runButton", true);
 }
 
-function resetPressed(){
+window.resetPressed=function(){
 	//When the reset button is pressed
 	//Disable all buttons
 	setEnableButton("runButton", false)
@@ -238,7 +249,8 @@ function resetPressed(){
 	window.robotWindow.send("reset");
 }
 
-function loadController(robotNumber) {
+//function loadController(robotNumber) {
+window.loadController= function(robotNumber) {
 	readFile().then(file => {
 		if (!file.name.endsWith(".py")) {
 			alert("El archivo no es un controlador válido");
@@ -249,7 +261,7 @@ function loadController(robotNumber) {
 	});
 }
 
-function loadRobot(robotNumber){
+window.loadRobot = function(robotNumber){
 	readFile().then(file => {
 		if (!file.name.endsWith(".json")) {
 			alert("El archivo no es una definición de robot válida");
@@ -288,16 +300,16 @@ function setEnableButton(name, state){
 
 //Set the onload command for the window
 window.onload = function(){
-	if (window.webots) {
+	//if (window.webots) {
 		//Connect the window
-		window.robotWindow = webots.window();
+		window.robotWindow = new RobotWindow();//webots.window();
 		//Set the title
 		window.robotWindow.setTitle('Control de la Simulación');
 		//Set which function handles the recieved messages
 		window.robotWindow.receive = receive;
 		//Set timer to inital time value
 		document.getElementById("timer").innerHTML = calculateTimeRemaining(0);
-	}
+	//}
 };
 
 function endGame(){
@@ -310,7 +322,7 @@ function endGame(){
 	}
 }
 
-function hide_winning_screen(){
+window.hide_winning_screen=function(){
 	//Disable winner screen
 	document.getElementById("winning-screen").style.display = "none";
 }

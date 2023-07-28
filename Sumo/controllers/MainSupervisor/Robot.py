@@ -68,10 +68,65 @@ class Robot:
         root = self.supervisor.getRoot()
         root_children_field = root.getField('children')
         # Get .wbo file to insert into world
-        if filePath[-4:] == "game":
-          root_children_field.importMFNode(-2, os.path.join(filePath,'nodes/' + self.color + '.wbo'))
+        aux=os.path.join(filePath,'nodes/' + self.color + '.wbo')
+        if(self.color=='rojo'):
+            root_children_field.importMFNodeFromString(-2, \
+"""DEF Rojo rojo {
+  translation -0.2 0.0217 0
+  name "Rojo"
+  controller "robot0Controller"
+  extensionSlot [
+    DEF equipo Solid {
+      translation 0 0.024 0
+      rotation -1 0 0 1.57
+      children [
+        DEF placa Shape {
+          appearance PBRAppearance {
+            baseColor 1 0 0
+            metalness 0
+          }
+          geometry Cylinder {
+            height 0.003
+            radius 0.03
+          }
+          isPickable FALSE
+        }
+      ]
+      boundingObject USE placa
+      physics Physics {
+      }
+    }
+  ]
+}""")
         else:
-          root_children_field.importMFNode(-2, os.path.join(filePath, '../../nodes/' + self.color + '.wbo'))
+            root_children_field.importMFNodeFromString(-2, \
+"""DEF Verde verde {
+  translation 0.2 0.0217 0
+  name "Verde"
+  controller "robot1Controller"
+  extensionSlot [
+    DEF equipo Solid {
+      translation 0 0.024 0
+      rotation -1 0 0 1.57
+      children [
+        DEF placa Shape {
+          appearance PBRAppearance {
+            baseColor 0 1 0
+            metalness 0
+          }
+          geometry Cylinder {
+            height 0.003
+            radius 0.03
+          }
+          isPickable FALSE
+        }
+      ]
+      boundingObject USE placa
+      physics Physics {
+      }
+    }
+  ]
+}""")
 
         self.inSimulation = True
 

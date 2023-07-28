@@ -172,7 +172,7 @@ while simulationRunning:
     message = supervisor.wwiReceiveText()
 
     # If there is a message
-    if message != "":
+    if message != "" and message != None:
         # split into parts
         parts = message.split(",")
         # If there are parts

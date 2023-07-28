@@ -22,7 +22,7 @@ def createProto(jsonFile, color):
         for letter in("rx", "ry", "rz", "a"):
             dict[value["customName"]][letter] = float(value[letter])
 
-    finalProto = """#VRML_SIM R2020a utf8
+    finalProto = """#VRML_SIM R2023a utf8
 
                     # license: Copyright Cyberbotics Ltd. Licensed for use only with Webots.
                     # license url: https://cyberbotics.com/webots_assets_license
@@ -142,20 +142,11 @@ def createProto(jsonFile, color):
                         }}
                         Camera {{
                             translation {2[x]} {2[y]} {2[z]}
-                            rotation {2[rx]} {2[ry]} {2[rz]} {2[a]}
+                            rotation {2[rz]} {2[ry]} {2[rx]} {2[a]}
                             name "colorPiso"
                             width 1
                             height 1
-                            children [
-                                DEF sensor Shape {{
-                                    appearance PBRAppearance {{
-                                        baseColor 0.5 1 0.8
-                                    }}
-                                    geometry Box {{
-                                        size 0.01 0.01 0.01
-                                    }}
-                                }}
-                            ]
+                            
                         }}
 
 
@@ -282,7 +273,7 @@ def createProto(jsonFile, color):
                             physics DEF WHEEL_PHYSICS Physics {{
                             }}
                             boundingObject DEF WHEEL_BOUNDING_OBJECT Transform {{
-                                rotation 0 0 1 1.57
+                                rotation 0 1 0 1.57
                                 children Cylinder {{
                                 radius 0.0125
                                 height 0.0055
@@ -408,6 +399,7 @@ def createProto(jsonFile, color):
                         children [
                             Transform {{
                             translation 0 -0.009 -0.03
+                            rotation 1 0 0 -1.57
                             children Capsule {{
                                 height 0.018
                                 radius 0.0036
